@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectPC - Prototipo académico</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="top-promo">
+        <div class="promo-icon">%</div>
+        <div class="promo-text">EXTENDIENDO los precios WOW hasta el 8 de noviembre</div>
+        <div class="promo-icon">%</div>
+    </div>
+
+    <header class="header-main">
+        <div class="header-upper wrapper">
+            <div class="brand-area">
+                <div class="brand-logo">
+                    <div class="brand-title">Memory Kings</div>
+                    <div class="brand-subtitle">Lo Mejor en Equipos de Cómputo y Accesorios</div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="mini-links">
+                    <a href="#">Clientes</a>
+                    <a href="#">Trabaja con Nosotros</a>
+                    <a href="#">Libro de Reclamaciones</a>
+                    <a href="#">Modalidades de Pago</a>
+                    <a href="#">Políticas de Garantía</a>
+                    <a href="#">Nuestra Empresa</a>
+                    <a href="#">Delivery</a>
+                </div>
+
+                <div class="search-social">
+                    <div class="search-box">
+                        <input type="text" placeholder="Buscar...">
+                        <button>🔍</button>
+                    </div>
+                    <div class="social-icons">
+                        <span>f</span>
+                        <span>ig</span>
+                        <span>t</span>
+                        <span>▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="main-nav">
+            <div class="wrapper nav-links">
+                <a href="#">🏠</a>
+                <a href="#">Productos</a>
+                <a href="#">Marcas</a>
+                <a href="#">NEW!</a>
+                <a href="#">Ofertas</a>
+                <a href="#">Laptops</a>
+                <a href="#">PCs de Marca</a>
+                <a href="#">PCs MK Rino</a>
+                <a href="#">Punto de Venta POS</a>
+                <a href="#">Monitores</a>
+                <a href="#">Promociones</a>
+                <a href="#">Carrito <span class="cart-badge">0</span></a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-overlay wrapper">
+            <div class="hero-left">
+                <div class="hero-brand">eset</div>
+                <div class="hero-brand-sub">Cybersecurity Progress. Protected.</div>
+                <h1>ANTIVIRUS ESET AHORA CON</h1>
+                <div class="discount-line">
+                    <span class="big-discount">50%</span>
+                    <span class="discount-text">DE DESCUENTO</span>
+                </div>
+                <p class="hero-copy">Protección avanzada para ti y tus dispositivos</p>
+                <button class="buy-btn">COMPRA AHORA</button>
+            </div>
+
+            <div class="hero-center">
+                <div class="software-box">NOD32 ANTIVIRUS</div>
+                <div class="software-box">HOME SECURITY ESSENTIAL</div>
+                <div class="software-box">HOME SECURITY PREMIUM</div>
+            </div>
+
+            <div class="hero-right">
+                <div class="hero-person-card">
+                    <div class="person-placeholder">💻</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-terms">
+            Términos y condiciones: Promoción válida en productos seleccionados. Los precios publicados ya incluyen el descuento promocional.
+        </div>
+    </section>
+
+    <div class="brand-strip">
+        <span>Memory Kings.pe</span>
+        <span>Memory Kings.pe</span>
+        <span>Memory Kings.pe</span>
+        <span>Memory Kings.pe</span>
+        <span>Memory Kings.pe</span>
+    </div>
+
+    <main class="catalog wrapper">
+        <div class="breadcrumb">🏠 Inicio / Productos</div>
+
+        <div class="catalog-header">
+            <div>
+                <h2>Ofertas</h2>
+                <p>Mostrando 235 productos</p>
+            </div>
+
+            <div class="sort-box-line">
+                <label for="ordenar">Ordenar por</label>
+                <select id="ordenar">
+                    <option>Seleccione</option>
+                    <option>Precio</option>
+                    <option>Nombre</option>
+                    <option>Ofertas</option>
+                </select>
+            </div>
+        </div>
+
+        <section class="product-grid">
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">MONITOR</div>
+                <h3>Monitor GIGABYTE MO27Q3 QD-OLED 2K</h3>
+                <p class="old-price">S/ 2,537.00</p>
+                <p class="price">S/ 2,502.00</p>
+                <p class="stock">Stock: &gt; 10</p>
+                <p class="code">Código interno: 041648</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">LAPTOP</div>
+                <h3>Laptop GIGABYTE AERO X16</h3>
+                <p class="old-price">S/ 7,503.50</p>
+                <p class="price">S/ 7,433.50</p>
+                <p class="stock">Stock: 4</p>
+                <p class="code">Código interno: 041879</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">AURICULAR</div>
+                <h3>Auricular JBL Tune 780NC Bluetooth Black</h3>
+                <p class="old-price">S/ 261.50</p>
+                <p class="price">S/ 240.50</p>
+                <p class="stock">Stock: 1</p>
+                <p class="code">Código interno: 042481</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">AURICULAR</div>
+                <h3>Auricular JBL Tune 780NC Bluetooth White</h3>
+                <p class="old-price">S/ 261.50</p>
+                <p class="price">S/ 240.50</p>
+                <p class="stock">Stock: 1</p>
+                <p class="code">Código interno: 042482</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">CASE</div>
+                <h3>Case Mid Tower Antryx FX-800 ARGB 4FAN Black</h3>
+                <p class="old-price">S/ 286.00</p>
+                <p class="price">S/ 275.50</p>
+                <p class="stock">Stock: 2</p>
+                <p class="code">Código interno: 039795</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">CASE</div>
+                <h3>Case Mid Tower Corsair 3000D RGB Airflow White</h3>
+                <p class="old-price">S/ 338.50</p>
+                <p class="price">S/ 230.00</p>
+                <p class="stock">Stock: 7</p>
+                <p class="code">Código interno: 038236</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">COOLER</div>
+                <h3>Cooler CPU Liquid 240 MSI MAG Coreliquid I240 White</h3>
+                <p class="old-price">S/ 471.00</p>
+                <p class="price">S/ 376.50</p>
+                <p class="stock">Stock: &gt; 10</p>
+                <p class="code">Código interno: 039646</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">COOLER</div>
+                <h3>Cooler CPU Liquid 240 XPG Levante X 240 ARGB Black</h3>
+                <p class="old-price">S/ 477.00</p>
+                <p class="price">S/ 338.50</p>
+                <p class="stock">Stock: 1</p>
+                <p class="code">Código interno: 037487</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">MEMORIA</div>
+                <h3>Memoria RAM Kingston DDR4 16GB 3200MHz</h3>
+                <p class="old-price">S/ 189.00</p>
+                <p class="price">S/ 159.00</p>
+                <p class="stock">Stock: 9</p>
+                <p class="code">Código interno: 044125</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">SSD</div>
+                <h3>SSD NVMe WD Green SN350 1TB</h3>
+                <p class="old-price">S/ 265.00</p>
+                <p class="price">S/ 229.00</p>
+                <p class="stock">Stock: &gt; 10</p>
+                <p class="code">Código interno: 038816</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">LAPTOP</div>
+                <h3>Laptop Lenovo IdeaPad 3 Ryzen 5</h3>
+                <p class="old-price">S/ 2,299.00</p>
+                <p class="price">S/ 2,149.00</p>
+                <p class="stock">Stock: 3</p>
+                <p class="code">Código interno: 042020</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">GPU</div>
+                <h3>Tarjeta de Video RTX 4060 8GB</h3>
+                <p class="old-price">S/ 1,599.00</p>
+                <p class="price">S/ 1,499.00</p>
+                <p class="stock">Stock: 5</p>
+                <p class="code">Código interno: 041770</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">MOUSE</div>
+                <h3>Mouse Logitech G203 Lightsync</h3>
+                <p class="old-price">S/ 129.00</p>
+                <p class="price">S/ 95.00</p>
+                <p class="stock">Stock: &gt; 10</p>
+                <p class="code">Código interno: 029000</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">TECLADO</div>
+                <h3>Teclado Mecánico Redragon Kumara</h3>
+                <p class="old-price">S/ 199.00</p>
+                <p class="price">S/ 169.00</p>
+                <p class="stock">Stock: 6</p>
+                <p class="code">Código interno: 032110</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">PLACA</div>
+                <h3>Placa Madre ASUS Prime B550M-A</h3>
+                <p class="old-price">S/ 499.00</p>
+                <p class="price">S/ 459.00</p>
+                <p class="stock">Stock: 4</p>
+                <p class="code">Código interno: 031444</p>
+            </article>
+
+            <article class="product-card">
+                <div class="offer-tag">Oferta</div>
+                <div class="product-thumb">PROCESADOR</div>
+                <h3>Procesador AMD Ryzen 5 5600G</h3>
+                <p class="old-price">S/ 699.00</p>
+                <p class="price">S/ 619.00</p>
+                <p class="stock">Stock: 8</p>
+                <p class="code">Código interno: 040555</p>
+            </article>
+        </section>
+    </main>
+
+    <div class="bottom-support-bar">
+        <div class="support-item">
+            <div class="support-icon">🟢</div>
+            <div>
+                <strong>Contácta con tu Asesora de Ventas Online</strong>
+                <span>Haz clic aquí</span>
+            </div>
+        </div>
+
+        <div class="support-item">
+            <div class="support-icon">✉</div>
+            <div>
+                <strong>Atención al Cliente</strong>
+                <span>Haz clic aquí</span>
+            </div>
+        </div>
+
+        <div class="support-item">
+            <div class="support-icon">🛠</div>
+            <div>
+                <strong>Soporte Técnico</strong>
+                <span>998 245 564</span>
+            </div>
+        </div>
+    </div>
+
+    <button id="chat-toggle" class="chat-toggle">Hablar con ConnectPC</button>
+
+    <div id="chat-window" class="chat-window">
+        <div class="chat-header">
+            <div>
+                <h3>ConectaPC</h3>
+                <p>Asistente virtual de tecnología</p>
+            </div>
+            <button id="chat-close" class="chat-close">✕</button>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+            <div class="message bot">
+                Hola, soy ConectaPC. Puedo ayudarte con laptops, RAM, SSD, procesadores, compatibilidad y problemas técnicos.
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input id="chat-input" type="text" placeholder="Escribe tu consulta...">
+            <button id="chat-send">➤</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='chat.js') }}"></script>
+</body>
+</html>
