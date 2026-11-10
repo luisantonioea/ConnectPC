@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: connectpc-ia
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 90 app:app
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: ENABLE_GOOGLE_SEARCH
+        value: "0"

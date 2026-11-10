@@ -2,4 +2,12 @@
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+*.log
+build/
+dist/
+*.spec
+*.exe
+*.zip
 reporte_pc.json
+.DS_Store

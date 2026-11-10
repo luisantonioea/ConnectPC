@@ -1,344 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ConnectPC - Prototipo académico</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#008d40">
+  <meta name="description" content="ConnectPC: asesor IA para PC, videojuegos y hardware. Prototipo academico de tienda inspirado en Memory Kings Peru.">
+  <title>Memory Kings / ConnectPC IA - Demostraci&oacute;n acad&eacute;mica</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='storefront.js') }}" defer></script>
 </head>
 <body>
+  <div class="academico" role="note"><span class="academic-dot"></span> PROYECTO UNIVERSITARIO NO OFICIAL <span class="dotsep">&bull;</span> TIENDA DEMOSTRATIVA <span class="dotsep">&bull;</span> SIN COMPRAS NI PRECIOS VIGENTES <span class="academico-right">ConnectPC IA &middot; asesor&iacute;a tecnol&oacute;gica</span></div>
 
-    <div class="top-promo">
-        <div class="promo-icon">%</div>
-        <div class="promo-text">EXTENDIENDO los precios WOW hasta el 8 de noviembre</div>
-        <div class="promo-icon">%</div>
+  <div class="promo-top" aria-label="Banner promocional ilustrativo">
+    <div class="promo-top-inner">
+      <div class="promo-top-side"><span class="promo-star">%</span> TU TIENDA TECH</div>
+      <div class="promo-top-center"><span class="top-kicker">SEMANA TECNOL&Oacute;GICA</span><strong>CYBER <em>WOW</em></strong><small>Descuentos, gaming y m&aacute;s &bull; Promoci&oacute;n visual de demostraci&oacute;n</small></div>
+      <div class="promo-top-side right">&iexcl;TECNOLOG&Iacute;A PARA TODOS! <span class="promo-star">%</span></div>
     </div>
+  </div>
 
-    <header class="header-main">
-        <div class="header-upper wrapper">
-            <div class="brand-area">
-                <div class="brand-logo">
-                    <div class="brand-title">Memory Kings</div>
-                    <div class="brand-subtitle">Lo Mejor en Equipos de Cómputo y Accesorios</div>
-                </div>
-            </div>
-
-            <div class="header-right">
-                <div class="mini-links">
-                    <a href="#">Clientes</a>
-                    <a href="#">Trabaja con Nosotros</a>
-                    <a href="#">Libro de Reclamaciones</a>
-                    <a href="#">Modalidades de Pago</a>
-                    <a href="#">Políticas de Garantía</a>
-                    <a href="#">Nuestra Empresa</a>
-                    <a href="#">Delivery</a>
-                </div>
-
-                <div class="search-social">
-                    <div class="search-box">
-                        <input type="text" placeholder="Buscar...">
-                        <button>🔍</button>
-                    </div>
-                    <div class="social-icons">
-                        <span>f</span>
-                        <span>ig</span>
-                        <span>t</span>
-                        <span>▶</span>
-                    </div>
-                </div>
-            </div>
+  <header class="mk-header" id="inicio">
+    <div class="site-width head-inner">
+      <a href="#inicio" class="mk-logo-link" aria-label="Inicio, prototipo inspirado en Memory Kings">
+        <img src="{{ url_for('static', filename='img/memory-kings-referencia.webp') }}" alt="Marca Memory Kings usada como referencia visual academica" width="310" height="88">
+        <span class="logo-demo-tag">DEMO &middot; CONNECTPC IA</span>
+      </a>
+      <div class="head-right">
+        <div class="tiny-links"><a href="#informacion-demo">Clientes</a><a href="#informacion-demo">Nuestras Tiendas</a><a href="#informacion-demo">Nuestra Empresa</a><a href="#informacion-demo">Modalidades de Pago</a><a href="#informacion-demo">Pol&iacute;ticas de Garant&iacute;a</a><a href="#informacion-demo">Soporte T&eacute;cnico</a></div>
+        <div class="head-tools">
+          <form class="mk-search" id="search-form" role="search">
+            <label class="sr-only" for="search-input">Buscar productos o consultar a la IA</label>
+            <input type="search" id="search-input" maxlength="180" placeholder="Buscar productos, laptops, procesadores, juegos..." autocomplete="off">
+            <button type="submit" title="Buscar con ConnectPC IA" aria-label="Buscar con el asistente"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg></button>
+          </form>
+          <div class="social-buttons" aria-label="Iconos sociales de ejemplo"><span title="Facebook">f</span><span title="Instagram">◎</span><span title="TikTok">♪</span><span title="YouTube">▶</span></div>
+          <button type="button" class="head-assistant" data-action="open-chat" title="Preguntar a ConnectPC IA"><span class="online-led"></span><span><strong id="ai-label">ConnectPC IA</strong><small id="ai-subtitle">Comprobando servicio...</small></span></button>
         </div>
+      </div>
+    </div>
+  </header>
 
-        <nav class="main-nav">
-            <div class="wrapper nav-links">
-                <a href="#">🏠</a>
-                <a href="#">Productos</a>
-                <a href="#">Marcas</a>
-                <a href="#">NEW!</a>
-                <a href="#">Ofertas</a>
-                <a href="#">Laptops</a>
-                <a href="#">PCs de Marca</a>
-                <a href="#">PCs MK Rino</a>
-                <a href="#">Punto de Venta POS</a>
-                <a href="#">Monitores</a>
-                <a href="#">Promociones</a>
-                <a href="#">Carrito <span class="cart-badge">0</span></a>
-            </div>
-        </nav>
-    </header>
+  <nav class="mk-nav" aria-label="Navegacion de tienda demostrativa">
+    <div class="site-width nav-row">
+      <button class="mobile-menu-toggle" type="button" id="menu-toggle" aria-expanded="false" aria-controls="nav-links">&#9776; &nbsp; Ver men&uacute; de productos</button>
+      <div class="nav-links" id="nav-links">
+        <a class="nav-home" href="#inicio" aria-label="Inicio">&#8962;</a>
+        <a href="#categorias">PRODUCTOS <span class="down">&#8964;</span></a>
+        <a href="#marcas">MARCAS <span class="down">&#8964;</span></a>
+        <a href="#novedades">NEW!</a>
+        <a href="#ofertas" class="nav-highlight">OFERTAS</a>
+        <a href="#laptops">LAPTOPS <span class="down">&#8964;</span></a>
+        <a href="#computadoras">PCs DE MARCA <span class="down">&#8964;</span></a>
+        <a href="#computadoras">PCs MK RINO <span class="down">&#8964;</span></a>
+        <a href="#ofertas">MONITORES</a>
+        <a href="#ofertas">PROMOCIONES</a>
+      </div>
+      <button type="button" class="nav-cart" title="Carrito demostrativo, sin compras"><span>&#128722;</span> Carrito <b>0</b></button>
+    </div>
+  </nav>
 
-    <section class="hero">
-        <div class="hero-overlay wrapper">
-            <div class="hero-left">
-                <div class="hero-brand">eset</div>
-                <div class="hero-brand-sub">Cybersecurity Progress. Protected.</div>
-                <h1>ANTIVIRUS ESET AHORA CON</h1>
-                <div class="discount-line">
-                    <span class="big-discount">50%</span>
-                    <span class="discount-text">DE DESCUENTO</span>
-                </div>
-                <p class="hero-copy">Protección avanzada para ti y tus dispositivos</p>
-                <button class="buy-btn">COMPRA AHORA</button>
-            </div>
-
-            <div class="hero-center">
-                <div class="software-box">NOD32 ANTIVIRUS</div>
-                <div class="software-box">HOME SECURITY ESSENTIAL</div>
-                <div class="software-box">HOME SECURITY PREMIUM</div>
-            </div>
-
-            <div class="hero-right">
-                <div class="hero-person-card">
-                    <div class="person-placeholder">💻</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hero-terms">
-            Términos y condiciones: Promoción válida en productos seleccionados. Los precios publicados ya incluyen el descuento promocional.
-        </div>
+  <main>
+    <div class="site-width breadcrumb">Inicio <span>&rsaquo;</span> <b>Ofertas y novedades</b> <span class="breadcrumb-right">Tienda de muestra &bull; Asesor IA disponible</span></div>
+    <section class="hero-carousel" id="promociones" aria-roledescription="carrusel" aria-label="Promociones visuales de ejemplo">
+      <div class="hero-slide is-active">
+        <img class="hero-banner" src="{{ url_for('static', filename='img/banner-wow-referencia.webp') }}" alt="Campana WOW anterior de Memory Kings. Imagen ilustrativa con precios y fechas NO vigentes." width="2048" height="726">
+        <div class="banner-alert">REFERENCIA HIST&Oacute;RICA &middot; PRECIOS Y PROMOCIONES NO VIGENTES</div>
+      </div>
+      <div class="hero-slide slide-custom slide-custom-green" hidden>
+        <div class="hero-custom-copy"><span class="custom-tag">CONNECTPC &middot; ASESOR TECNOL&Oacute;GICO</span><h1>ARMA TU <span>SETUP</span><br>IDEAL.</h1><p>Elige procesador, tarjeta gr&aacute;fica, RAM y accesorios. Consulta con una IA que te explica todo paso a paso.</p><button type="button" data-action="open-chat">CONSULTAR A CONNECTPC &rarr;</button></div>
+        <img src="{{ url_for('static', filename='img/desktop.svg') }}" alt="Ilustracion de computadora de escritorio" class="hero-custom-image">
+      </div>
+      <div class="hero-slide slide-custom slide-custom-purple" hidden>
+        <div class="hero-custom-copy"><span class="custom-tag">GAMING &middot; HERRAMIENTA CON IA</span><h1>&iquest;TU PC CORRE <span>ESTE JUEGO?</span></h1><p>Consulta requisitos y compara el hardware que compartas. Sin inventar FPS ni resultados garantizados.</p><button type="button" data-action="analyze">ANALIZAR MI PC &rarr;</button></div>
+        <img src="{{ url_for('static', filename='img/gpu.svg') }}" alt="Ilustracion de tarjeta grafica" class="hero-custom-image">
+      </div>
+      <button class="hero-arrow prev" id="slider-prev" aria-label="Banner anterior" type="button">&#8249;</button>
+      <button class="hero-arrow next" id="slider-next" aria-label="Banner siguiente" type="button">&#8250;</button>
+      <div class="hero-dots" aria-label="Elegir banner"><button class="selected" aria-label="Banner 1" data-banner="0" type="button"></button><button aria-label="Banner 2" data-banner="1" type="button"></button><button aria-label="Banner 3" data-banner="2" type="button"></button></div>
     </section>
 
-    <div class="brand-strip">
-        <span>Memory Kings.pe</span>
-        <span>Memory Kings.pe</span>
-        <span>Memory Kings.pe</span>
-        <span>Memory Kings.pe</span>
-        <span>Memory Kings.pe</span>
-    </div>
+    <section class="service-bar" aria-label="Ventajas de ConnectPC">
+      <div class="site-width service-grid"><div><span class="service-icon">&#128666;</span><span><b>ENV&Iacute;OS A TODO EL PER&Uacute;</b><small>Referencia visual &middot; sin ventas</small></span></div><div><span class="service-icon">&#128187;</span><span><b>VARIEDAD DE TECNOLOG&Iacute;A</b><small>Cat&aacute;logo ilustrativo</small></span></div><div><span class="service-icon">&#128172;</span><span><b>ASESOR&Iacute;A PERSONALIZADA</b><small>ConnectPC IA disponible</small></span></div><div><span class="service-icon">&#128274;</span><span><b>PROYECTO ACAD&Eacute;MICO</b><small>No recolecta pedidos</small></span></div></div>
+    </section>
 
-    <main class="catalog wrapper">
-        <div class="breadcrumb">🏠 Inicio / Productos</div>
-
-        <div class="catalog-header">
-            <div>
-                <h2>Ofertas</h2>
-                <p>Mostrando 235 productos</p>
-            </div>
-
-            <div class="sort-box-line">
-                <label for="ordenar">Ordenar por</label>
-                <select id="ordenar">
-                    <option>Seleccione</option>
-                    <option>Precio</option>
-                    <option>Nombre</option>
-                    <option>Ofertas</option>
-                </select>
-            </div>
+    <div class="site-width store-layout" id="categorias">
+      <aside class="store-sidebar">
+        <div class="side-title"><span>&#9776;</span> NUESTROS PRODUCTOS</div>
+        <div class="side-list">
+          <a href="#laptops">&#128187; Laptops <span>&rsaquo;</span></a>
+          <a href="#computadoras">&#128421; PCs Desktop de Marca <span>&rsaquo;</span></a>
+          <a href="#computadoras">&#128187; PCs MK Rino Ensambladas <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#9881; Procesadores <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#127918; Tarjetas Gr&aacute;ficas <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#9638; Memorias RAM <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#9636; Almacenamiento SSD / HDD <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#128434; Monitores y Pantallas <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#9000; Teclados y Mouse <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#127911; Aud&iacute;fonos y Micr&oacute;fonos <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#128268; Case y Fuentes <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#9889; Cooling y Refrigeraci&oacute;n <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#128268; Redes y Routers <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#127918; Zona Gaming <span>&rsaquo;</span></a>
+          <a href="#ofertas">&#128241; Smartphones y Tablets <span>&rsaquo;</span></a>
         </div>
+        <button type="button" class="sidebar-assistant" data-action="open-chat"><span>&#128172;</span><b>&iquest;No sabes qu&eacute; elegir?</b><small>Conversa con nuestro asesor IA.</small><strong>CONSULTAR AQU&Iacute; &rarr;</strong></button>
+        <div class="side-disclaimer">Cat&aacute;logo visual de demostraci&oacute;n. Los productos no se venden desde este sitio.</div>
+      </aside>
 
-        <section class="product-grid">
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">MONITOR</div>
-                <h3>Monitor GIGABYTE MO27Q3 QD-OLED 2K</h3>
-                <p class="old-price">S/ 2,537.00</p>
-                <p class="price">S/ 2,502.00</p>
-                <p class="stock">Stock: &gt; 10</p>
-                <p class="code">Código interno: 041648</p>
-            </article>
+      <div class="store-main">
+        <section class="intro-ribbon" id="novedades"><div><span class="ribbon-small">CONOCE NUESTROS</span><h2>PRODUCTOS DESTACADOS</h2><p>Ofertas, marcas y equipos de referencia para inspirar tu pr&oacute;xima PC.</p></div><button type="button" data-action="open-chat">PREGUNTAR A LA IA &rarr;</button></section>
 
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">LAPTOP</div>
-                <h3>Laptop GIGABYTE AERO X16</h3>
-                <p class="old-price">S/ 7,503.50</p>
-                <p class="price">S/ 7,433.50</p>
-                <p class="stock">Stock: 4</p>
-                <p class="code">Código interno: 041879</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">AURICULAR</div>
-                <h3>Auricular JBL Tune 780NC Bluetooth Black</h3>
-                <p class="old-price">S/ 261.50</p>
-                <p class="price">S/ 240.50</p>
-                <p class="stock">Stock: 1</p>
-                <p class="code">Código interno: 042481</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">AURICULAR</div>
-                <h3>Auricular JBL Tune 780NC Bluetooth White</h3>
-                <p class="old-price">S/ 261.50</p>
-                <p class="price">S/ 240.50</p>
-                <p class="stock">Stock: 1</p>
-                <p class="code">Código interno: 042482</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">CASE</div>
-                <h3>Case Mid Tower Antryx FX-800 ARGB 4FAN Black</h3>
-                <p class="old-price">S/ 286.00</p>
-                <p class="price">S/ 275.50</p>
-                <p class="stock">Stock: 2</p>
-                <p class="code">Código interno: 039795</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">CASE</div>
-                <h3>Case Mid Tower Corsair 3000D RGB Airflow White</h3>
-                <p class="old-price">S/ 338.50</p>
-                <p class="price">S/ 230.00</p>
-                <p class="stock">Stock: 7</p>
-                <p class="code">Código interno: 038236</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">COOLER</div>
-                <h3>Cooler CPU Liquid 240 MSI MAG Coreliquid I240 White</h3>
-                <p class="old-price">S/ 471.00</p>
-                <p class="price">S/ 376.50</p>
-                <p class="stock">Stock: &gt; 10</p>
-                <p class="code">Código interno: 039646</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">COOLER</div>
-                <h3>Cooler CPU Liquid 240 XPG Levante X 240 ARGB Black</h3>
-                <p class="old-price">S/ 477.00</p>
-                <p class="price">S/ 338.50</p>
-                <p class="stock">Stock: 1</p>
-                <p class="code">Código interno: 037487</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">MEMORIA</div>
-                <h3>Memoria RAM Kingston DDR4 16GB 3200MHz</h3>
-                <p class="old-price">S/ 189.00</p>
-                <p class="price">S/ 159.00</p>
-                <p class="stock">Stock: 9</p>
-                <p class="code">Código interno: 044125</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">SSD</div>
-                <h3>SSD NVMe WD Green SN350 1TB</h3>
-                <p class="old-price">S/ 265.00</p>
-                <p class="price">S/ 229.00</p>
-                <p class="stock">Stock: &gt; 10</p>
-                <p class="code">Código interno: 038816</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">LAPTOP</div>
-                <h3>Laptop Lenovo IdeaPad 3 Ryzen 5</h3>
-                <p class="old-price">S/ 2,299.00</p>
-                <p class="price">S/ 2,149.00</p>
-                <p class="stock">Stock: 3</p>
-                <p class="code">Código interno: 042020</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">GPU</div>
-                <h3>Tarjeta de Video RTX 4060 8GB</h3>
-                <p class="old-price">S/ 1,599.00</p>
-                <p class="price">S/ 1,499.00</p>
-                <p class="stock">Stock: 5</p>
-                <p class="code">Código interno: 041770</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">MOUSE</div>
-                <h3>Mouse Logitech G203 Lightsync</h3>
-                <p class="old-price">S/ 129.00</p>
-                <p class="price">S/ 95.00</p>
-                <p class="stock">Stock: &gt; 10</p>
-                <p class="code">Código interno: 029000</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">TECLADO</div>
-                <h3>Teclado Mecánico Redragon Kumara</h3>
-                <p class="old-price">S/ 199.00</p>
-                <p class="price">S/ 169.00</p>
-                <p class="stock">Stock: 6</p>
-                <p class="code">Código interno: 032110</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">PLACA</div>
-                <h3>Placa Madre ASUS Prime B550M-A</h3>
-                <p class="old-price">S/ 499.00</p>
-                <p class="price">S/ 459.00</p>
-                <p class="stock">Stock: 4</p>
-                <p class="code">Código interno: 031444</p>
-            </article>
-
-            <article class="product-card">
-                <div class="offer-tag">Oferta</div>
-                <div class="product-thumb">PROCESADOR</div>
-                <h3>Procesador AMD Ryzen 5 5600G</h3>
-                <p class="old-price">S/ 699.00</p>
-                <p class="price">S/ 619.00</p>
-                <p class="stock">Stock: 8</p>
-                <p class="code">Código interno: 040555</p>
-            </article>
+        <section class="catalog-section" id="ofertas">
+          <header class="catalog-header"><div class="section-name"><span class="section-badge">%</span><div><h2>SUPER <em>OFERTAS</em></h2><p>Selecci&oacute;n visual de hardware y accesorios</p></div></div><span class="view-all">VER TODOS &#8250;</span></header>
+          <div class="catalog-grid">
+            <article class="product-card"><span class="product-sticker hot">OFERTA DEMO</span><img src="{{ url_for('static', filename='img/gpu.svg') }}" alt="Ilustracion de tarjeta grafica"><div class="product-info"><span class="product-code">GR&Aacute;FICOS &middot; GAMING</span><h3>Tarjeta gr&aacute;fica GeForce RTX para gaming y dise&ntilde;o</h3><p>Modelos seg&uacute;n disponibilidad del fabricante</p><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Quiero elegir una tarjeta grafica NVIDIA RTX. Compara opciones y compatibilidad.">PREGUNTAR AL ASESOR &#8599;</button></div></article>
+            <article class="product-card"><span class="product-sticker">SELECCI&Oacute;N TECH</span><img src="{{ url_for('static', filename='img/laptop.svg') }}" alt="Ilustracion de laptop gamer"><div class="product-info"><span class="product-code">LAPTOPS &middot; GAMING</span><h3>Laptop gamer de alto rendimiento para estudiar y jugar</h3><p>Intel / AMD &middot; Gr&aacute;ficos dedicados</p><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Ayudame a elegir una laptop gamer segun mi presupuesto y juegos favoritos.">PREGUNTAR AL ASESOR &#8599;</button></div></article>
+            <article class="product-card"><span class="product-sticker hot">DESTACADO</span><img src="{{ url_for('static', filename='img/cpu.svg') }}" alt="Ilustracion de procesador"><div class="product-info"><span class="product-code">PROCESADORES &middot; PC</span><h3>Procesador AMD Ryzen para rendimiento multitarea</h3><p>Compatibilidad con placas y memorias</p><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Que procesador AMD Ryzen conviene para una PC gamer o de trabajo?">PREGUNTAR AL ASESOR &#8599;</button></div></article>
+            <article class="product-card"><span class="product-sticker">NOVEDAD</span><img src="{{ url_for('static', filename='img/ssd.svg') }}" alt="Ilustracion de unidad SSD"><div class="product-info"><span class="product-code">ALMACENAMIENTO &middot; SSD</span><h3>Almacenamiento SSD NVMe M.2 de alta velocidad</h3><p>Ideal para ampliar tu PC o laptop</p><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Me conviene un SSD NVMe o SATA? Que debo verificar antes de comprar?">PREGUNTAR AL ASESOR &#8599;</button></div></article>
+          </div>
         </section>
-    </main>
 
-    <div class="bottom-support-bar">
-        <div class="support-item">
-            <div class="support-icon">🟢</div>
-            <div>
-                <strong>Contácta con tu Asesora de Ventas Online</strong>
-                <span>Haz clic aquí</span>
-            </div>
-        </div>
+        <section class="two-promo-strip" aria-label="Banners por categorias">
+          <div class="tile-promo promo-pc" id="computadoras"><div><span>PCs ARMADAS</span><h3>POTENCIA<br>PARA TUS IDEAS.</h3><button type="button" data-prompt="Quiero armar una PC para juegos y estudios. Que componentes necesito?">VER CONSEJOS &#8599;</button></div><img src="{{ url_for('static', filename='img/desktop.svg') }}" alt="PC de escritorio"></div>
+          <div class="tile-promo promo-laptop" id="laptops"><div><span>ESPECIAL LAPTOPS</span><h3>TU MEJOR<br>ALIADO TECH.</h3><button type="button" data-prompt="Que laptop me recomiendas para universidad y trabajo?">EXPLORAR &#8599;</button></div><img src="{{ url_for('static', filename='img/laptop.svg') }}" alt="Laptop"></div>
+        </section>
 
-        <div class="support-item">
-            <div class="support-icon">✉</div>
-            <div>
-                <strong>Atención al Cliente</strong>
-                <span>Haz clic aquí</span>
-            </div>
-        </div>
+        <section class="catalog-section brands-section" id="marcas"><header class="catalog-header"><div class="section-name"><span class="section-badge brand">&#9733;</span><div><h2>NUESTRAS <em>MARCAS</em></h2><p>Algunas marcas reconocidas del mundo tecnol&oacute;gico</p></div></div></header><div class="brand-logos"><span>ASUS</span><span>AMD</span><span>intel</span><span>MSI</span><span>GIGABYTE</span><span>KINGSTON</span><span>Logitech</span><span>CORSAIR</span></div></section>
 
-        <div class="support-item">
-            <div class="support-icon">🛠</div>
-            <div>
-                <strong>Soporte Técnico</strong>
-                <span>998 245 564</span>
-            </div>
-        </div>
+        <section class="catalog-section second-row"><header class="catalog-header"><div class="section-name"><span class="section-badge new">NEW</span><div><h2>RECI&Eacute;N <em>LLEGADOS</em></h2><p>Componentes y perif&eacute;ricos para tu pr&oacute;ximo setup</p></div></div><span class="view-all">M&Aacute;S PRODUCTOS &#8250;</span></header><div class="catalog-grid compact-grid">
+            <article class="product-card"><span class="product-sticker">RAM</span><img src="{{ url_for('static', filename='img/ram.svg') }}" alt="Modulo de memoria RAM"><div class="product-info"><span class="product-code">MEMORIAS</span><h3>Memoria RAM DDR4 y DDR5 para PC</h3><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Que RAM necesita mi PC y como verifico compatibilidad DDR4 o DDR5?">CONSULTAR &#8599;</button></div></article>
+            <article class="product-card"><span class="product-sticker">PC</span><img src="{{ url_for('static', filename='img/desktop.svg') }}" alt="PC desktop"><div class="product-info"><span class="product-code">PC DESKTOP</span><h3>Computadora de escritorio para gaming</h3><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Ayudame a elegir componentes para una PC de escritorio equilibrada.">CONSULTAR &#8599;</button></div></article>
+            <article class="product-card"><span class="product-sticker">CPU</span><img src="{{ url_for('static', filename='img/cpu.svg') }}" alt="Procesador Intel"><div class="product-info"><span class="product-code">PROCESADOR</span><h3>Procesadores Intel Core para tu PC</h3><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Cual es la diferencia entre Intel Core i5, i7 y sus generaciones?">CONSULTAR &#8599;</button></div></article>
+            <article class="product-card"><span class="product-sticker">GPU</span><img src="{{ url_for('static', filename='img/gpu.svg') }}" alt="Tarjeta grafica AMD"><div class="product-info"><span class="product-code">VIDEO</span><h3>Gr&aacute;ficos Radeon para jugar y crear</h3><strong class="demo-price">CONSULTAR CON IA</strong><button type="button" data-prompt="Que debo saber para comparar graficas Radeon RX y GeForce RTX?">CONSULTAR &#8599;</button></div></article>
+          </div></section>
+      </div>
     </div>
 
-    <button id="chat-toggle" class="chat-toggle">Hablar con ConnectPC</button>
+    <section class="ai-feature" id="analizador"><div class="site-width ai-feature-inner">
+      <div class="feature-text"><span class="feature-kicker">NUEVA HERRAMIENTA &middot; CONNECTPC IA</span><h2>&iquest;MI PC PUEDE CORRER<br><span>ESTE JUEGO?</span></h2><p>Conoce la informaci&oacute;n de tu hardware y consulta requisitos de videojuegos. Un an&aacute;lisis exacto necesita el detector de Windows instalado y autorizado; la versi&oacute;n web ofrece datos limitados.</p><div class="feature-actions"><button type="button" class="feature-button" data-action="analyze">&#128187; ANALIZAR MI PC &rarr;</button><button type="button" class="feature-secondary" data-action="open-chat">&#128172; HABLAR CON LA IA</button><button type="button" class="feature-secondary" data-action="upload">&#8679; CARGAR INFORME</button></div><p class="feature-note">No se ejecuta software en la PC sin autorizaci&oacute;n. Compatible con detector Windows cuando est&aacute; iniciado.</p></div>
+      <div class="dashboard"><div class="dashboard-top"><div><span class="dashboard-eyebrow">CONNECTPC SYSTEM SCAN</span><h3>Mi equipo <span class="dash-live-dot"></span></h3></div><span id="hw-badge" class="hw-badge">SIN ANALIZAR</span></div><div class="dashboard-grid"><div class="dash-tile"><span class="tile-icon">&#9635;</span><small>PROCESADOR</small><strong id="hw-cpu">Sin identificar</strong></div><div class="dash-tile"><span class="tile-icon">&#9670;</span><small>GR&Aacute;FICOS</small><strong id="hw-gpu">Sin identificar</strong></div><div class="dash-tile"><span class="tile-icon">&#8801;</span><small>MEMORIA RAM</small><strong id="hw-ram">Sin identificar</strong></div><div class="dash-tile"><span class="tile-icon">&#9711;</span><small>SISTEMA</small><strong id="hw-os">Sin identificar</strong></div></div><p class="hardware-hint" id="hardware-hint">Pulsa &laquo;Analizar mi PC&raquo; para comenzar.</p><div class="game-check"><div class="game-head"><span class="game-controller">&#127918;</span><div><strong>&iquest;Corre en mi PC?</strong><small>Consulta los requisitos con Gemini y Steam</small></div></div><form id="game-form" class="game-form"><label class="sr-only" for="game-input">Nombre del videojuego</label><input id="game-input" placeholder="Dota 2, GTA V, Cyberpunk..." maxlength="90" required><button type="submit">COMPROBAR &rarr;</button></form><div class="game-result" id="game-result" aria-live="polite">Escribe un juego para consultar la informaci&oacute;n disponible.</div></div></div>
+    </div></section>
 
-    <div id="chat-window" class="chat-window">
-        <div class="chat-header">
-            <div>
-                <h3>ConectaPC</h3>
-                <p>Asistente virtual de tecnología</p>
-            </div>
-            <button id="chat-close" class="chat-close">✕</button>
-        </div>
+    <section class="footer-services"><div class="site-width"><div><span>&#9742;</span><strong>CONTACTO</strong><small>Solo demostraci&oacute;n</small></div><div><span>&#9993;</span><strong>ASESOR&Iacute;A VIRTUAL</strong><small>ConnectPC IA</small></div><div><span>&#128187;</span><strong>SOPORTE T&Eacute;CNICO</strong><small>Preguntas sobre PC y Windows</small></div><div><span>&#128230;</span><strong>CAT&Aacute;LOGO TECH</strong><small>Productos referenciales</small></div></div></section>
+  </main>
 
-        <div id="chat-messages" class="chat-messages">
-            <div class="message bot">
-                Hola, soy ConectaPC. Puedo ayudarte con laptops, RAM, SSD, procesadores, compatibilidad y problemas técnicos.
-            </div>
-        </div>
+  <footer class="mk-footer" id="informacion-demo"><div class="site-width footer-columns"><div><h3>MEMORY KINGS &middot; REFERENCIA</h3><p>Dise&ntilde;o de tienda inspirado en la identidad visual de Memory Kings Per&uacute;. Esta web es un <strong>proyecto universitario independiente</strong>, no afiliado a la empresa.</p></div><div><h3>INFORMACI&Oacute;N</h3><a href="#inicio">Inicio</a><a href="#ofertas">Cat&aacute;logo ilustrativo</a><a href="#analizador">Analizar mi PC</a></div><div><h3>CONNECTPC IA</h3><button type="button" data-action="open-chat">Abrir asesor inteligente</button><span>Hardware, juegos y soporte.</span></div><div><h3>AVISO IMPORTANTE</h3><p>Los banners hist&oacute;ricos contienen precios NO vigentes. No hay compras, pedidos, inventario ni servicio de venta real.</p></div></div><div class="site-width copyright">&copy; 2026 ConnectPC &bull; Uso educativo &bull; No es la p&aacute;gina oficial de Memory Kings.</div></footer>
 
-        <div class="chat-input-area">
-            <input id="chat-input" type="text" placeholder="Escribe tu consulta...">
-            <button id="chat-send">➤</button>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='chat.js') }}"></script>
+  <div class="bottom-contact"><div class="site-width"><span><b>&#128172; CONSULTAS ONLINE</b> &nbsp; Asesor&iacute;a con IA para tu PC</span><button type="button" data-action="open-chat">&#128172; CHATEAR CON CONNECTPC <span>&rarr;</span></button></div></div>
+  <div class="chat-overlay" id="chat-overlay" hidden></div>
+  <section class="chat-panel" id="chat-panel" role="dialog" aria-label="Chat con ConnectPC IA" aria-modal="false" aria-hidden="true">
+    <div class="chat-head"><div class="chat-avatar"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="6" width="28" height="28" rx="9" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M26 15a8 8 0 1 0 0 10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></div><div class="chat-head-title"><strong>ConnectPC <span>IA</span></strong><small><span class="online-dot"></span> Tu asesor tecnol&oacute;gico</small></div><button type="button" class="chat-close" id="chat-close" aria-label="Cerrar chat">&#10005;</button></div>
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-relevant="additions"><div class="message bot"><span class="bubble"><strong>&iexcl;Hola! Soy ConnectPC.</strong><br>&iquest;Quieres saber si tu PC corre un juego, elegir componentes o solucionar un problema? Estoy aqu&iacute; para ayudarte.</span></div></div>
+    <div class="chat-suggestions" id="chat-suggestions"><button type="button" data-prompt="Que juegos puedo jugar con mi PC?">&#127918; Juegos para mi PC</button><button type="button" data-prompt="Mi computadora esta lenta. Ayudame a diagnosticarla paso a paso.">&#9889; PC lenta</button><button type="button" data-action="analyze">&#128187; Analizar PC</button></div>
+    <div class="chat-tools"><button type="button" data-action="analyze">&#9678; Analizar</button><button type="button" data-action="upload">&#8682; Cargar informe</button><button type="button" id="chat-reset">&#8635; Nuevo chat</button></div>
+    <form class="chat-form" id="chat-form"><label for="chat-input" class="sr-only">Escribe tu mensaje</label><textarea id="chat-input" rows="1" maxlength="2000" placeholder="Escribe tu pregunta..."></textarea><button type="submit" id="chat-send" aria-label="Enviar mensaje"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.6 21 3l-6.4 18-3.1-8.4z"/><path d="m11.5 12.6 9.5-9.6"/></svg></button></form>
+    <div class="chat-bottom-note">IA experimental &middot; Verifica datos importantes antes de comprar.</div>
+  </section>
+  <button type="button" class="chat-fab" id="chat-fab" aria-label="Abrir ConnectPC IA" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v10a2.5 2.5 0 0 1-2.5 2.5H9L4 22z"/><path d="M8 9h8M8 13h5"/></svg><span class="fab-ping"></span></button>
+  <input type="file" id="report-file" accept=".json,application/json" hidden aria-label="Seleccionar informe de hardware JSON">
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>

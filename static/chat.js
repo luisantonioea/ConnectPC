@@ -1,553 +1,392 @@
+"use strict";
 
-const chatToggle = document.getElementById("chat-toggle");
-const chatWindow = document.getElementById("chat-window");
-const chatClose = document.getElementById("chat-close");
-const chatSend = document.getElementById("chat-send");
-const chatInput = document.getElementById("chat-input");
-const chatMessages = document.getElementById("chat-messages");
+// ConnectPC - frontend sin frameworks. El navegador no puede leer CPU/GPU exactas
+// sin un programa local autorizado; los datos basicos se etiquetan como tales.
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const panel = $("chat-panel");
+  const overlay = $("chat-overlay");
+  const fab = $("chat-fab");
+  const messages = $("chat-messages");
+  const chatInput = $("chat-input");
+  const sendButton = $("chat-send");
+  const form = $("chat-form");
+  const gameInput = $("game-input");
+  const fileInput = $("report-file");
+  const toast = $("toast");
+  const ENDPOINT_LOCAL = "http://127.0.0.1:8765/analizar";
+  const state = { equipo: null, historial: [], enviando: false, analizando: false, abierto: false };
+  let toastTimer = null;
+  let linkDetector = "";
 
-const historial = [];
+  function notificar(texto, tipo = "ok", duracion = 6000) {
+    clearTimeout(toastTimer);
+    toast.textContent = texto;
+    toast.className = "toast" + (tipo === "ok" ? "" : " " + tipo);
+    toast.hidden = false;
+    if (duracion > 0) toastTimer = setTimeout(() => { toast.hidden = true; }, duracion);
+  }
 
-let equipoActual = null;
-let enviando = false;
-let preguntaPendiente = null;
+  function abrirChat() {
+    panel.classList.add("is-open");
+    panel.setAttribute("aria-hidden", "false");
+    overlay.hidden = false;
+    fab.setAttribute("aria-expanded", "true");
+    state.abierto = true;
+    if (window.innerWidth < 621) fab.hidden = true;
+    setTimeout(() => chatInput.focus({ preventScroll: true }), 80);
+  }
 
-// =======================================
-// MENSAJES Y VENTANA
-// =======================================
+  function cerrarChat() {
+    panel.classList.remove("is-open");
+    panel.setAttribute("aria-hidden", "true");
+    overlay.hidden = true;
+    fab.setAttribute("aria-expanded", "false");
+    fab.hidden = false;
+    state.abierto = false;
+  }
 
-function addMessage(texto, tipo) {
-    const div = document.createElement("div");
-    div.className = "message " + tipo;
-    div.textContent = texto;
-
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    return div;
-}
-
-function openChat() {
-    chatWindow.classList.add("open");
-    chatToggle.style.display = "none";
-    chatInput.focus();
-}
-
-function closeChat() {
-    chatWindow.classList.remove("open");
-    chatToggle.style.display = "block";
-}
-
-// =======================================
-// BOTONES DEL CHAT
-// =======================================
-
-const herramientas = document.createElement("div");
-
-herramientas.style.cssText = `
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 10px;
-    background: #f5f8f5;
-    border-top: 1px solid #dddddd;
-`;
-
-function crearBoton(nombre) {
-    const boton = document.createElement("button");
-
-    boton.type = "button";
-    boton.textContent = nombre;
-
-    boton.style.cssText = `
-        border: 1px solid #008e39;
-        border-radius: 7px;
-        padding: 8px;
-        background: white;
-        color: #007b33;
-        font-size: 11px;
-        font-weight: bold;
-        cursor: pointer;
-    `;
-
-    return boton;
-}
-
-const botonAnalizar = crearBoton("🖥️ Analizar mi PC");
-const botonArchivo = crearBoton("📂 Cargar informe");
-const botonQuitar = crearBoton("✕ Quitar datos");
-const botonNuevo = crearBoton("↻ Nuevo chat");
-
-const selector = document.createElement("input");
-selector.type = "file";
-selector.accept = ".json,application/json";
-selector.style.display = "none";
-
-herramientas.append(
-    botonAnalizar,
-    botonArchivo,
-    botonQuitar,
-    botonNuevo,
-    selector
-);
-
-const zonaEntrada = chatWindow.querySelector(".chat-input-area");
-
-chatWindow.insertBefore(herramientas, zonaEntrada);
-
-// =======================================
-// CONTROL DEL CHAT
-// =======================================
-
-function bloquearChat(estado) {
-    enviando = estado;
-
-    chatSend.disabled = estado;
-    botonAnalizar.disabled = estado;
-    botonArchivo.disabled = estado;
-    botonNuevo.disabled = estado;
-
-    botonQuitar.disabled = estado || equipoActual === null;
-}
-
-function normalizar(texto) {
-    return texto
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-}
-
-// =======================================
-// DETECTAR PREGUNTAS SOBRE RENDIMIENTO
-// =======================================
-
-function necesitaAnalizarPC(mensaje) {
-    const texto = normalizar(mensaje);
-
-    const mencionaSuEquipo =
-        /\b(mi|mis|esta|este)\s+(pc|laptop|computadora|notebook|equipo|maquina)\b/
-        .test(texto);
-
-    const preguntaRendimiento =
-        /\b(corre|correr|correra|corra|soporta|soporte|soportara|aguanta|aguantara|jugar|juega|ejecutar|ejecuta|fps|rendimiento|funciona|funcionara)\b/
-        .test(texto);
-
-    const preguntaDirecta =
-        /\b(puedo|podre|podria)\s+(correr|jugar|ejecutar)\b/
-        .test(texto);
-
-    const preguntaJuegos =
-        /\b(que|cuales)\s+juegos\s+(puedo|me)\b/
-        .test(texto);
-
-    const meCorre =
-        /\bme\s+(corre|correra|funciona|funcionara|aguanta)\b/
-        .test(texto);
-
-    return (
-        (mencionaSuEquipo && preguntaRendimiento) ||
-        preguntaDirecta ||
-        preguntaJuegos ||
-        meCorre
-    );
-}
-
-// =======================================
-// VALIDAR INFORME
-// =======================================
-
-function validarEquipo(datos) {
-    if (
-        !datos ||
-        datos.formato !== "connectpc-hardware-v1" ||
-        typeof datos.procesador !== "string" ||
-        typeof datos.sistema_operativo !== "string" ||
-        !Array.isArray(datos.graficas)
-    ) {
-        throw new Error("Informe de hardware inválido.");
+  function fragmentoTexto(texto, nodo) {
+    // Negritas basicas con nodos DOM; nunca se inserta HTML del modelo.
+    const partes = String(texto).split(/(\*\*[^*]{1,160}\*\*)/g);
+    for (const parte of partes) {
+      if (parte.startsWith("**") && parte.endsWith("**")) {
+        const strong = document.createElement("strong");
+        strong.textContent = parte.slice(2, -2);
+        nodo.appendChild(strong);
+      } else {
+        nodo.appendChild(document.createTextNode(parte));
+      }
     }
+  }
 
-    const ram = Number(datos.ram_gb);
-
-    if (!Number.isFinite(ram) || ram <= 0 || ram > 1024) {
-        throw new Error("La memoria RAM no es válida.");
+  function addMessage(texto, role = "bot", fuentes = []) {
+    const item = document.createElement("div");
+    item.className = "message " + role;
+    const bubble = document.createElement("span");
+    bubble.className = "bubble";
+    fragmentoTexto(texto, bubble);
+    item.appendChild(bubble);
+    if (role === "bot" && Array.isArray(fuentes) && fuentes.length) {
+      const lista = document.createElement("div");
+      lista.className = "sources";
+      for (const fuente of fuentes.slice(0, 5)) {
+        if (!fuente || typeof fuente.url !== "string" || !fuente.url.startsWith("https://")) continue;
+        const enlace = document.createElement("a");
+        enlace.href = fuente.url;
+        enlace.target = "_blank";
+        enlace.rel = "noopener noreferrer";
+        enlace.textContent = fuente.titulo || "Consultar fuente";
+        lista.appendChild(enlace);
+      }
+      if (lista.childNodes.length) bubble.appendChild(lista);
     }
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    return { item, bubble };
+  }
 
+  function addTyping() {
+    const item = document.createElement("div");
+    item.className = "message bot";
+    const bubble = document.createElement("span");
+    bubble.className = "bubble";
+    bubble.setAttribute("aria-label", "ConnectPC est\u00e1 escribiendo");
+    const anim = document.createElement("span");
+    anim.className = "typing";
+    for (let i = 0; i < 3; i += 1) anim.appendChild(document.createElement("i"));
+    bubble.appendChild(anim);
+    item.appendChild(bubble);
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    return item;
+  }
+
+  function resumenEquipo(equipo) {
+    if (equipo.formato === "connectpc-hardware-v1") {
+      return [
+        "Procesador: " + (equipo.procesador || "No identificado"),
+        "Gr\u00e1ficos: " + ((equipo.graficas || []).join(", ") || "No identificados"),
+        "RAM: " + (equipo.ram_gb ? equipo.ram_gb + " GB" : "Sin dato"),
+        "Sistema: " + (equipo.sistema_operativo || "Sin dato"),
+      ].join("\n");
+    }
+    return [
+      "N\u00facleos l\u00f3gicos (reportados por navegador): " + (equipo.nucleos_logicos || "Sin dato"),
+      "RAM aproximada: " + (equipo.ram_aproximada_gb ? equipo.ram_aproximada_gb + " GB" : "No disponible"),
+      "Gr\u00e1ficos WebGL: " + (equipo.gpu_webgl || "No disponibles"),
+      "Plataforma: " + (equipo.plataforma || "No disponible"),
+    ].join("\n");
+  }
+
+  function renderEquipo(equipo, aviso = "") {
+    state.equipo = equipo;
+    const exacto = equipo && equipo.formato === "connectpc-hardware-v1";
+    const badge = $("hw-badge");
+    badge.className = "hw-badge" + (equipo ? (exacto ? " full" : " basic") : "");
+    badge.textContent = equipo ? (exacto ? "DETECCI\u00d3N COMPLETA" : "REVISI\u00d3N B\u00c1SICA") : "SIN ANALIZAR";
+    $("hw-cpu").textContent = equipo ? (exacto ? equipo.procesador : (equipo.nucleos_logicos || "?") + " n\u00facleos l\u00f3gicos") : "Sin identificar";
+    $("hw-gpu").textContent = equipo ? (exacto ? (equipo.graficas || []).join(" / ") : equipo.gpu_webgl) || "No identificado" : "Sin identificar";
+    $("hw-ram").textContent = equipo ? (exacto ? (equipo.ram_gb ? equipo.ram_gb + " GB" : "Sin dato") : (equipo.ram_aproximada_gb ? "~" + equipo.ram_aproximada_gb + " GB" : "No disponible")) : "Sin identificar";
+    $("hw-os").textContent = equipo ? (exacto ? equipo.sistema_operativo : equipo.plataforma) || "No disponible" : "Sin identificar";
+    $("hardware-hint").textContent = aviso || (equipo ? (exacto ? "Datos obtenidos con permiso desde el detector de Windows. No se incluye informaci\u00f3n personal." : "Estos datos del navegador son aproximados: no identifican de forma fiable CPU, GPU ni RAM exactas.") : "Pulsa 'Analizar mi PC' para comenzar.");
+  }
+
+  function validarInforme(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const equipo = raw.equipo && typeof raw.equipo === "object" ? raw.equipo : raw;
+    if (equipo.formato !== "connectpc-hardware-v1") return null;
+    if (typeof equipo.procesador !== "string" || !Array.isArray(equipo.graficas)) return null;
     return {
-        formato: "connectpc-hardware-v1",
-        procesador: datos.procesador.slice(0, 150),
-        ram_gb: ram,
-        graficas: datos.graficas
-            .filter(gpu => typeof gpu === "string")
-            .slice(0, 5)
-            .map(gpu => gpu.slice(0, 150)),
-        sistema_operativo: datos.sistema_operativo.slice(0, 150)
+      formato: "connectpc-hardware-v1",
+      procesador: equipo.procesador.slice(0, 140),
+      ram_gb: Number.isFinite(Number(equipo.ram_gb)) && Number(equipo.ram_gb) > 0 ? Number(equipo.ram_gb) : null,
+      graficas: equipo.graficas.filter((v) => typeof v === "string").slice(0, 5).map((v) => v.slice(0, 140)),
+      sistema_operativo: typeof equipo.sistema_operativo === "string" ? equipo.sistema_operativo.slice(0, 140) : "No identificado",
+      fuente: "informe_usuario",
     };
-}
+  }
 
-function resumenEquipo(equipo) {
-    return (
-        "CPU: " + equipo.procesador + "\n" +
-        "RAM: " + equipo.ram_gb + " GB\n" +
-        "GPU: " + equipo.graficas.join(", ") + "\n" +
-        "Sistema: " + equipo.sistema_operativo
-    );
-}
-
-// =======================================
-// DETECCION AUTOMATICA CON PERMISO
-// =======================================
-
-
-async function detectarConPermiso() {
-
-    const autorizado = window.confirm(
-        "ConnectPC necesita analizar los componentes " +
-        "de esta computadora.\n\n" +
-        "Se consultarán:\n" +
-        "• Procesador\n" +
-        "• Memoria RAM\n" +
-        "• Tarjetas gráficas\n" +
-        "• Sistema operativo\n\n" +
-        "¿Autorizas el análisis?"
-    );
-
-    if (!autorizado) {
-        addMessage(
-            "No autorizaste el análisis. " +
-            "Puedes seguir utilizando ConnectPC normalmente.",
-            "bot"
-        );
-        return false;
-    }
-
-    const esLocal = (
-        window.location.hostname === "127.0.0.1" ||
-        window.location.hostname === "localhost"
-    );
-
-    // Flask local o detector instalado en Windows
-    const url = esLocal
-        ? "/api/detectar-pc"
-        : "http://127.0.0.1:8765/analizar";
-
-    const estado = addMessage(
-        "🔍 ConnectPC está analizando tu computadora...",
-        "bot"
-    );
-
+  function informeNavegador() {
+    let renderer = "No disponible";
     try {
+      const canvas = document.createElement("canvas");
+      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      if (gl) {
+        const ext = gl.getExtension("WEBGL_debug_renderer_info");
+        if (ext) renderer = String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || "No disponible").slice(0, 140);
+      }
+    } catch (_err) { /* bloqueado por navegador */ }
+    return {
+      formato: "connectpc-browser-v1",
+      nucleos_logicos: Number.isInteger(navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : null,
+      ram_aproximada_gb: Number.isFinite(navigator.deviceMemory) ? navigator.deviceMemory : null,
+      gpu_webgl: renderer,
+      plataforma: (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "No disponible",
+    };
+  }
 
-        const opciones = esLocal
-            ? {
-                method: "POST",
-                headers: {
-                    "X-ConnectPC-Consent": "si"
-                }
-            }
-            : {
-                method: "POST",
-                mode: "cors",
-                targetAddressSpace: "loopback"
-            };
-
-        const respuesta = await fetch(url, opciones);
-
-        const datos = await respuesta.json();
-
-        if (!respuesta.ok || !datos.equipo) {
-            throw new Error(
-                datos.error ||
-                "No fue posible obtener los componentes."
-            );
-        }
-
-        equipoActual = validarEquipo(datos.equipo);
-
-        estado.textContent =
-            "✅ Análisis completado.\n\n" +
-            resumenEquipo(equipoActual) +
-            "\n\nAhora analizaré tu pregunta " +
-            "utilizando estos componentes.";
-
-        return true;
-
-    } catch (error) {
-
-        estado.textContent = (
-            "⚠️ No pude conectar con el detector.\n\n" +
-            (esLocal
-                ? "Comprueba que Flask esté ejecutándose."
-                : "Abre ConnectPC Detector en esta PC y " +
-                  "autoriza el acceso a la red local si " +
-                  "tu navegador lo solicita.") +
-            "\n\nTambién puedes usar '📂 Cargar informe'."
-        );
-
-        console.error("ConnectPC detector:", error);
-
-        return false;
-    }
-}
-
-
-// =======================================
-// CONSULTAR GEMINI
-// =======================================
-
-async function consultarGemini(mensaje, burbujaExistente = null) {
-    const visual = burbujaExistente || addMessage(
-        "🤖 ConnectPC está analizando tu pregunta...",
-        "bot"
-    );
-
+  async function analizarPC() {
+    if (state.analizando) return;
+    state.analizando = true;
+    document.querySelectorAll('[data-action="analyze"]').forEach((b) => { b.disabled = true; });
+    notificar("Buscando el detector seguro de ConnectPC en esta computadora...", "ok", 0);
+    const aborter = new AbortController();
+    const timeout = setTimeout(() => aborter.abort(), 40000);
     try {
-        const respuesta = await fetch("/api/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                mensaje: mensaje,
-                historial: historial.slice(-16),
-                equipo: equipoActual
-            })
-        });
-
-        const datos = await respuesta.json();
-
-        if (!respuesta.ok) {
-            throw new Error(
-                datos.error || "No se pudo consultar Gemini."
-            );
-        }
-
-        // Si Python pide analizar la PC, solicitar
-        // permiso y continuar la misma pregunta.
-        if (datos.requiere_analisis && !equipoActual) {
-            visual.textContent = datos.respuesta;
-            preguntaPendiente = mensaje;
-
-            const detectado = await detectarConPermiso();
-
-            if (detectado) {
-                preguntaPendiente = null;
-
-                visual.textContent =
-                    "Comparando los componentes con tu consulta...";
-
-                await consultarGemini(mensaje, visual);
-            }
-
-            return;
-        }
-
-        if (!datos.respuesta) {
-            throw new Error("Gemini devolvió una respuesta vacía.");
-        }
-
-        visual.textContent = datos.respuesta;
-
-        // Guardar conversación con contexto
-        historial.push(
-            { role: "user", text: mensaje },
-            { role: "model", text: datos.respuesta }
-        );
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    } catch (error) {
-        visual.textContent =
-            "Ocurrió un problema: " + error.message;
-    }
-}
-
-// =======================================
-// PROCESAR PREGUNTA DEL USUARIO
-// =======================================
-
-async function procesarPregunta(mensaje, mostrar = true) {
-    if (!mensaje || enviando) return;
-
-    bloquearChat(true);
-
-    if (mostrar) {
-        addMessage(mensaje, "user");
-    }
-
-    try {
-        if (!equipoActual && necesitaAnalizarPC(mensaje)) {
-            preguntaPendiente = mensaje;
-
-            const detectado = await detectarConPermiso();
-
-            if (!detectado) return;
-
-            preguntaPendiente = null;
-        }
-
-        await consultarGemini(mensaje);
-
+      // Chrome/Edge moderno: declara explicitamente que apunta a loopback.
+      // El navegador decide si debe pedir permiso de acceso a red local.
+      const respuesta = await fetch(ENDPOINT_LOCAL, {
+        method: "POST",
+        mode: "cors",
+        targetAddressSpace: "loopback",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accion: "analizar" }),
+        signal: aborter.signal,
+      });
+      let datos = {};
+      try { datos = await respuesta.json(); } catch (_err) { /* sin cuerpo JSON */ }
+      if (!respuesta.ok || !datos.equipo) throw new Error(datos.error || "Detector no disponible");
+      const validado = validarInforme(datos.equipo);
+      if (!validado) throw new Error("El detector devolvi\u00f3 un informe inv\u00e1lido");
+      renderEquipo(validado);
+      notificar("Equipo detectado: CPU, gr\u00e1ficos, RAM y sistema operativo listos para la IA.");
+      if (state.abierto) addMessage("An\u00e1lisis completo autorizado.\n\n" + resumenEquipo(validado) + "\n\nYa puedes preguntarme si tu PC corre un juego.", "bot");
+      return validado;
+    } catch (err) {
+      const basico = informeNavegador();
+      renderEquipo(basico, "Revisi\u00f3n b\u00e1sica: los datos son aproximados. Para detectar modelos exactos, instala e inicia ConnectPC Detector en Windows y permite el acceso local del navegador.");
+      notificar("Revisi\u00f3n b\u00e1sica completada. El detector completo no est\u00e1 conectado. Puedes seguir usando la IA.", "warning", 10500);
+      if (state.abierto) addMessage(
+        "No se pudo conectar con ConnectPC Detector. He realizado una **revisi\u00f3n b\u00e1sica** con la informaci\u00f3n que permite el navegador:\n\n" +
+        resumenEquipo(basico) +
+        "\n\n**Importante:** esto no identifica necesariamente el modelo exacto del procesador, de la GPU ni la RAM f\u00edsica. Para el an\u00e1lisis completo necesitas instalar y autorizar el detector Windows." +
+        (linkDetector ? "\n\nEnlace de descarga configurado en la web." : "\n\nEl ZIP del proyecto incluye los archivos para crear e instalar el detector."),
+        "bot",
+        linkDetector ? [{ titulo: "Descargar detector Windows", url: linkDetector }] : []
+      );
+      console.info("ConnectPC: detector no accesible", err && err.message);
+      return basico;
     } finally {
-        bloquearChat(false);
-        chatInput.focus();
+      clearTimeout(timeout);
+      state.analizando = false;
+      document.querySelectorAll('[data-action="analyze"]').forEach((b) => { b.disabled = false; });
     }
-}
+  }
 
-// =======================================
-// CARGAR INFORME MANUALMENTE
-// =======================================
-
-botonArchivo.addEventListener("click", () => {
-    if (enviando) return;
-    selector.click();
-});
-
-selector.addEventListener("change", async () => {
-    const archivo = selector.files[0];
-
-    if (!archivo) return;
-
+  async function cargarInforme() {
+    const fichero = fileInput.files && fileInput.files[0];
+    if (!fichero) return;
+    if (fichero.size > 32 * 1024) {
+      notificar("El informe debe ser un JSON peque\u00f1o (m\u00e1ximo 32 KB).", "error");
+      fileInput.value = "";
+      return;
+    }
     try {
-        if (archivo.size > 20000) {
-            throw new Error("El archivo es demasiado grande.");
-        }
-
-        const texto = await archivo.text();
-        const informe = validarEquipo(JSON.parse(texto));
-
-        const aceptado = window.confirm(
-            "Componentes identificados:\n\n" +
-            resumenEquipo(informe) +
-            "\n\n¿Autorizas utilizar estos datos " +
-            "en las consultas a Gemini?"
-        );
-
-        if (!aceptado) return;
-
-        equipoActual = informe;
-
-        addMessage(
-            "✅ Informe cargado correctamente.\n\n" +
-            resumenEquipo(informe),
-            "bot"
-        );
-
-        bloquearChat(false);
-
-        // Responder automáticamente una pregunta pendiente
-        if (preguntaPendiente) {
-            const pregunta = preguntaPendiente;
-            preguntaPendiente = null;
-
-            await procesarPregunta(pregunta, false);
-        }
-
-    } catch (error) {
-        addMessage(
-            "No se pudo cargar el informe: " + error.message,
-            "bot"
-        );
-
-    } finally {
-        selector.value = "";
+      const datos = JSON.parse(await fichero.text());
+      const equipo = validarInforme(datos);
+      if (!equipo) throw new Error("Faltan los campos formato, procesador o graficas.");
+      renderEquipo(equipo, "Informe cargado por ti. No se ha realizado una detecci\u00f3n independiente.");
+      notificar("Informe importado correctamente. Ahora puedes comparar juegos con la IA.");
+      if (state.abierto) addMessage("Informe cargado:\n\n" + resumenEquipo(equipo), "bot");
+    } catch (_err) {
+      notificar("No es un informe ConnectPC v\u00e1lido. Utiliza el JSON generado por nuestro detector.", "error");
     }
-});
+    fileInput.value = "";
+  }
 
-// =======================================
-// ANALISIS MANUAL DESDE BOTON
-// =======================================
-
-botonAnalizar.addEventListener("click", async () => {
-    if (enviando) return;
-
-    bloquearChat(true);
-
+  async function enviarMensaje(mensaje, opciones = {}) {
+    const texto = String(mensaje || "").trim();
+    if (!texto || state.enviando) return;
+    state.enviando = true;
+    sendButton.disabled = true;
+    abrirChat();
+    addMessage(texto, "user");
+    const escribiendo = addTyping();
+    const historialAnterior = state.historial.slice(-12);
     try {
-        const detectado = await detectarConPermiso();
-
-        if (detectado && preguntaPendiente) {
-            const pregunta = preguntaPendiente;
-            preguntaPendiente = null;
-
-            await consultarGemini(pregunta);
-        }
-
+      const respuesta = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mensaje: texto,
+          historial: historialAnterior,
+          equipo: state.equipo,
+          juego: opciones.juego || undefined,
+        }),
+      });
+      const datos = await respuesta.json();
+      if (!respuesta.ok || typeof datos.respuesta !== "string") {
+        throw new Error(datos.error || "No se pudo consultar el asistente.");
+      }
+      const fuentes = Array.isArray(datos.fuentes) ? [...datos.fuentes] : [];
+      if (datos.juego && datos.juego.url && datos.juego.verificado) {
+        fuentes.unshift({ titulo: "Requisitos en Steam: " + datos.juego.nombre, url: datos.juego.url });
+      }
+      escribiendo.remove();
+      addMessage(datos.respuesta, "bot", fuentes);
+      state.historial.push({ role: "user", text: texto }, { role: "model", text: datos.respuesta });
+      state.historial = state.historial.slice(-12);
+      if (datos.modo === "demo") notificar("Modo demostraci\u00f3n: configura GEMINI_API_KEY para activar la IA.", "warning", 6500);
+    } catch (err) {
+      escribiendo.remove();
+      addMessage("No pude procesar esa consulta. " + (err && err.message ? err.message : "Verifica la conexi\u00f3n e int\u00e9ntalo de nuevo."), "bot");
     } finally {
-        bloquearChat(false);
+      state.enviando = false;
+      sendButton.disabled = false;
+      chatInput.focus({ preventScroll: true });
     }
-});
+  }
 
-// =======================================
-// QUITAR DATOS DEL EQUIPO
-// =======================================
+  async function consultarJuego(nombre) {
+    const campo = $("game-result");
+    campo.textContent = "Buscando requisitos publicados en Steam...";
+    try {
+      const respuesta = await fetch("/api/juegos/requisitos?nombre=" + encodeURIComponent(nombre));
+      const datos = await respuesta.json();
+      if (datos.encontrado && datos.juego) {
+        const juego = datos.juego;
+        campo.textContent = juego.verificado
+          ? "Encontrado: " + juego.nombre + ". Consulta los requisitos m\u00ednimos y recomendados en la respuesta de IA. "
+          : "Encontrado: " + juego.nombre + ". La ficha no publica requisitos de PC verificables. ";
+        const link = document.createElement("a");
+        link.href = juego.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Ver ficha oficial en Steam";
+        campo.appendChild(link);
+      } else {
+        campo.textContent = "No se localiz\u00f3 ficha fiable en Steam. Aun as\u00ed, la IA intentar\u00e1 orientarte sin fingir requisitos verificados.";
+      }
+    } catch (_err) {
+      campo.textContent = "Steam no respondi\u00f3. Puedes continuar con la IA, pero los requisitos no se han verificado.";
+    }
+  }
 
-botonQuitar.addEventListener("click", () => {
-    if (enviando) return;
+  document.querySelectorAll("[data-action]").forEach((elemento) => {
+    elemento.addEventListener("click", () => {
+      const accion = elemento.dataset.action;
+      if (accion === "open-chat") abrirChat();
+      if (accion === "analyze") analizarPC();
+      if (accion === "upload") fileInput.click();
+    });
+  });
+  document.querySelectorAll("[data-prompt]").forEach((elemento) => {
+    elemento.addEventListener("click", () => enviarMensaje(elemento.dataset.prompt));
+  });
 
-    equipoActual = null;
-    preguntaPendiente = null;
-    historial.length = 0;
+  fab.addEventListener("click", abrirChat);
+  $("chat-close").addEventListener("click", cerrarChat);
+  overlay.addEventListener("click", cerrarChat);
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && state.abierto) cerrarChat(); });
+  fileInput.addEventListener("change", cargarInforme);
 
-    addMessage(
-        "Datos del equipo retirados del contexto. " +
-        "También se limpió la memoria enviada a Gemini.",
-        "bot"
-    );
-
-    bloquearChat(false);
-});
-
-// =======================================
-// NUEVO CHAT
-// =======================================
-
-botonNuevo.addEventListener("click", () => {
-    if (enviando) return;
-
-    equipoActual = null;
-    preguntaPendiente = null;
-    historial.length = 0;
-
-    chatMessages.replaceChildren();
-
-    addMessage(
-        "¡Hola! 👋 Soy ConnectPC.\n\n" +
-        "Puedo ayudarte con hardware, software, " +
-        "videojuegos y diagnósticos de computadoras.\n\n" +
-        "Si necesitas comprobar un juego, " +
-        "te pediré autorización para analizar tu PC.",
-        "bot"
-    );
-
-    chatInput.value = "";
-    bloquearChat(false);
-    chatInput.focus();
-});
-
-// =======================================
-// EVENTOS PRINCIPALES
-// =======================================
-
-chatToggle.addEventListener("click", openChat);
-chatClose.addEventListener("click", closeChat);
-
-chatSend.addEventListener("click", () => {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
     const mensaje = chatInput.value.trim();
+    if (!mensaje || state.enviando) return;
     chatInput.value = "";
-
-    procesarPregunta(mensaje);
-});
-
-chatInput.addEventListener("keydown", (evento) => {
-    if (evento.key === "Enter" && !evento.isComposing) {
-        evento.preventDefault();
-
-        const mensaje = chatInput.value.trim();
-        chatInput.value = "";
-
-        procesarPregunta(mensaje);
+    chatInput.style.height = "";
+    enviarMensaje(mensaje);
+  });
+  chatInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      form.requestSubmit();
     }
-});
+  });
+  chatInput.addEventListener("input", () => {
+    chatInput.style.height = "auto";
+    chatInput.style.height = Math.min(100, chatInput.scrollHeight) + "px";
+  });
+  $("chat-reset").addEventListener("click", () => {
+    state.historial = [];
+    messages.replaceChildren();
+    addMessage("Conversaci\u00f3n reiniciada. Puedes hacer una nueva pregunta. Los datos de la PC siguen disponibles hasta que recargues la p\u00e1gina.", "bot");
+  });
 
-bloquearChat(false);
+  $("search-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const valor = $("search-input").value.trim();
+    if (valor) enviarMensaje(valor);
+    $("search-input").value = "";
+  });
+
+  $("game-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const nombre = gameInput.value.trim();
+    if (!nombre) return;
+    consultarJuego(nombre);
+    enviarMensaje(
+      "\u00bfMi PC puede ejecutar " + nombre + "? Compara los requisitos del juego con mi hardware. " +
+      "Distingue lo confirmado de lo desconocido y no inventes FPS.",
+      { juego: nombre }
+    );
+  });
+
+  const menuToggle = $("menu-toggle");
+  menuToggle.addEventListener("click", () => {
+    const abierto = $("nav-links").classList.toggle("is-open");
+    menuToggle.setAttribute("aria-expanded", String(abierto));
+  });
+  document.querySelectorAll(".nav-links a").forEach((enlace) => {
+    enlace.addEventListener("click", () => {
+      $("nav-links").classList.remove("is-open");
+      menuToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  fetch("/api/estado")
+    .then((r) => r.ok ? r.json() : Promise.reject(new Error("Sin servicio")))
+    .then((datos) => {
+      $("ai-label").textContent = datos.ia_activa ? "Gemini conectado" : "Modo demostraci\u00f3n";
+      $("ai-subtitle").textContent = datos.ia_activa ? "Asesor tech disponible" : "Configura tu API Key";
+      if (typeof datos.detector_url === "string" && datos.detector_url.startsWith("https://")) {
+        linkDetector = datos.detector_url;
+      }
+    })
+    .catch(() => {
+      $("ai-label").textContent = "Servicio no disponible";
+      $("ai-subtitle").textContent = "Intenta actualizar";
+    });
+})();
