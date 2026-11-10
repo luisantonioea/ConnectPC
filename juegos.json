@@ -1,6 +1,5 @@
-
 {
-  "version": "1.0",
+  "version": "1.1",
   "fecha_revision": "2026-11-09",
   "descripcion": "Base de conocimientos de requisitos de videojuegos para ConnectPC.",
   "juegos": [
@@ -99,6 +98,216 @@
         "El rendimiento depende de la configuracion y del equipo"
       ],
       "fuente": "https://store.steampowered.com/app/730/CounterStrike_2/"
+    },
+    {
+      "id": "gta-v",
+      "nombre": "Grand Theft Auto V",
+      "alias": [
+        "gta v",
+        "gta 5",
+        "gta5",
+        "grand theft auto v"
+      ],
+      "requisitos_minimos": {
+        "SO": "Windows 10 de 64 bits",
+        "Procesador": "Intel Core 2 Quad CPU Q6600 a 2,4 GHz (4 CPU)/AMD Phenom 9850 Quad-Core (4 CPU) a 2,5 GHz.",
+        "Memoria": "4 GB de RAM",
+        "Gráficos": "NVIDIA 9800 GT 1 GB/AMD HD 4870 1 GB (DX 10, 10.1, 11).",
+        "Almacenamiento": "125 GB de espacio disponible",
+        "Tarjeta de sonido": "compatible con DirectX 10."
+      },
+      "requisitos_recomendados": {
+        "SO": "Windows 10 de 64 bits",
+        "Procesador": "Intel Core i5 3470 a 3,2 GHz (4 CPU)/AMD X8 FX-8350 a 4 GHz (8 CPU).",
+        "Memoria": "8 GB de RAM",
+        "Gráficos": "NVIDIA GTX 660 2 GB/AMD HD7870 2 GB.",
+        "Almacenamiento": "125 GB de espacio disponible",
+        "Tarjeta de sonido": "compatible con DirectX 10."
+      },
+      "fuente": "https://store.steampowered.com/app/271590/"
+    },
+    {
+      "id": "apex-legends",
+      "nombre": "Apex Legends",
+      "alias": [
+        "apex",
+        "apex legends"
+      ],
+      "requisitos_minimos": {
+        "SO": "64-bit Windows 10",
+        "Procesador": "AMD FX 4350 or Equivalent, Intel Core i3 6300 or Equivalent",
+        "Memoria": "6 GB de RAM",
+        "Gráficos": "AMD Radeon™ HD 7790 (2 GB), NVIDIA GeForce® GTX 950",
+        "DirectX": "Versión 12",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "75 GB de espacio disponible",
+        "Notas adicionales": "~3.8GB for 1 localized language"
+      },
+      "requisitos_recomendados": {
+        "SO": "64-bit Windows 10",
+        "Procesador": "Ryzen 5 CPU or Equivalent",
+        "Memoria": "8 GB de RAM",
+        "Gráficos": "AMD Radeon™ R9 290, NVIDIA GeForce® GTX 970",
+        "DirectX": "Versión 12",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "75 GB de espacio disponible",
+        "Notas adicionales": "~3.8GB for 1 localized language"
+      },
+      "fuente": "https://store.steampowered.com/app/1172470/"
+    },
+    {
+      "id": "cyberpunk-2077",
+      "nombre": "Cyberpunk 2077",
+      "alias": [
+        "cyberpunk",
+        "cyberpunk 2077"
+      ],
+      "requisitos_minimos": {
+        "SO": "64-bit Windows 10",
+        "Procesador": "Core i7-6700 or Ryzen 5 1600",
+        "Memoria": "12 GB de RAM",
+        "Gráficos": "GeForce GTX 1060 6GB or Radeon RX 580 8GB or Arc A380",
+        "DirectX": "Versión 12",
+        "Almacenamiento": "70 GB de espacio disponible"
+      },
+      "requisitos_recomendados": {
+        "SO": "64-bit Windows 10",
+        "Procesador": "Core i7-12700 or Ryzen 7 7800X3D",
+        "Memoria": "16 GB de RAM",
+        "Gráficos": "GeForce RTX 2060 SUPER or Radeon RX 5700 XT or Arc A770",
+        "DirectX": "Versión 12",
+        "Almacenamiento": "70 GB de espacio disponible",
+        "Notas adicionales": "SSD required."
+      },
+      "fuente": "https://store.steampowered.com/app/1091500/"
+    },
+    {
+      "id": "elden-ring",
+      "nombre": "Elden Ring",
+      "alias": [
+        "elden ring"
+      ],
+      "requisitos_minimos": {
+        "SO": "Windows 10",
+        "Procesador": "INTEL CORE I5-8400 or AMD RYZEN 3 3300X",
+        "Memoria": "12 GB de RAM",
+        "Gráficos": "NVIDIA GEFORCE GTX 1060 3 GB or AMD RADEON RX 580 4 GB",
+        "DirectX": "Versión 12",
+        "Almacenamiento": "60 GB de espacio disponible",
+        "Tarjeta de sonido": "Windows Compatible Audio Device"
+      },
+      "requisitos_recomendados": {
+        "SO": "Windows 10/11",
+        "Procesador": "INTEL CORE I7-8700K or AMD RYZEN 5 3600X",
+        "Memoria": "16 GB de RAM",
+        "Gráficos": "NVIDIA GEFORCE GTX 1070 8 GB or AMD RADEON RX VEGA 56 8 GB",
+        "DirectX": "Versión 12",
+        "Almacenamiento": "60 GB de espacio disponible",
+        "Tarjeta de sonido": "Windows Compatible Audio Device"
+      },
+      "fuente": "https://store.steampowered.com/app/1245620/"
+    },
+    {
+      "id": "dota-2",
+      "nombre": "Dota 2",
+      "alias": [
+        "dota",
+        "dota 2"
+      ],
+      "requisitos_minimos": {
+        "SO": "Windows 7 o posterior",
+        "Procesador": "Intel o AMD de doble núcleo a 2,8 GHz",
+        "Memoria": "4 GB de RAM",
+        "Gráficos": "NVIDIA GeForce 8600/9600GT, ATI/AMD Radeon HD2600/3600",
+        "DirectX": "Versión 11",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "60 GB de espacio disponible",
+        "Tarjeta de sonido": "Compatible con DirectX"
+      },
+      "requisitos_recomendados": {},
+      "fuente": "https://store.steampowered.com/app/570/"
+    },
+    {
+      "id": "rocket-league",
+      "nombre": "Rocket League",
+      "alias": [
+        "rocket league"
+      ],
+      "requisitos_minimos": {
+        "SO": "Windows 7 (64 bit) or Newer (64 bit) Windows OS",
+        "Procesador": "2.5 GHz Dual core",
+        "Memoria": "4 GB de RAM",
+        "Gráficos": "NVIDIA GeForce 760, AMD Radeon R7 270X, or better",
+        "DirectX": "Versión 11",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "20 GB de espacio disponible"
+      },
+      "requisitos_recomendados": {
+        "SO": "Windows 7 (64 bit) or Newer (64 bit) Windows OS",
+        "Procesador": "3.0+ GHz Quad core",
+        "Memoria": "8 GB de RAM",
+        "Gráficos": "NVIDIA GeForce GTX 1060, AMD Radeon RX 470, or better",
+        "DirectX": "Versión 11",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "20 GB de espacio disponible",
+        "Notas adicionales": "Gamepad or Controller Recommended"
+      },
+      "fuente": "https://store.steampowered.com/app/252950/"
+    },
+    {
+      "id": "baldurs-gate-3",
+      "nombre": "Baldur's Gate 3",
+      "alias": [
+        "baldur's gate 3",
+        "baldurs gate 3",
+        "bg3"
+      ],
+      "requisitos_minimos": {
+        "SO": "Windows 10 64-bit",
+        "Procesador": "Intel I5 4690 / AMD FX 8350 / Snapdragon X Elite",
+        "Memoria": "8 GB de RAM",
+        "Gráficos": "Nvidia GTX 970 / RX 480 / Intel Arc A380 / Qualcomm Adreno X1 (4GB+ of VRAM)",
+        "DirectX": "Versión 11",
+        "Almacenamiento": "150 GB de espacio disponible",
+        "Notas adicionales": "SSD required"
+      },
+      "requisitos_recomendados": {
+        "SO": "Windows 10 64-bit",
+        "Procesador": "Intel i7 8700K / AMD r5 3600",
+        "Memoria": "16 GB de RAM",
+        "Gráficos": "Nvidia 2060 Super / RX 5700 XT / Intel Arc A580 (8GB+ of VRAM)",
+        "DirectX": "Versión 11",
+        "Almacenamiento": "150 GB de espacio disponible",
+        "Notas adicionales": "SSD required"
+      },
+      "fuente": "https://store.steampowered.com/app/1086940/"
+    },
+    {
+      "id": "red-dead-redemption-2",
+      "nombre": "Red Dead Redemption 2",
+      "alias": [
+        "red dead redemption 2",
+        "rdr2"
+      ],
+      "requisitos_minimos": {
+        "SO": "Windows 10 - 64-bit",
+        "Procesador": "Intel® Core™ i5-2500K / AMD FX-6300",
+        "Memoria": "8 GB de RAM",
+        "Gráficos": "Nvidia GeForce GTX 770 2GB / AMD Radeon R9 280 3GB",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "150 GB de espacio disponible",
+        "Tarjeta de sonido": "Direct X Compatible"
+      },
+      "requisitos_recomendados": {
+        "SO": "Windows 10 - 64-bit",
+        "Procesador": "Intel® Core™ i7-4770K / AMD Ryzen 5 1500X",
+        "Memoria": "12 GB de RAM",
+        "Gráficos": "Nvidia GeForce GTX 1060 6GB / AMD Radeon RX 480 4GB",
+        "Red": "Conexión de banda ancha a Internet",
+        "Almacenamiento": "150 GB de espacio disponible",
+        "Tarjeta de sonido": "Direct X Compatible"
+      },
+      "fuente": "https://store.steampowered.com/app/1174180/"
     }
   ]
 }

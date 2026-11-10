@@ -1,0 +1,133 @@
+{
+  "descripcion": "Catalogo de demostracion de la tienda (datos de ejemplo, moneda S/).",
+  "productos": [
+    {
+      "codigo": "041648",
+      "categoria": "Monitor",
+      "nombre": "Monitor GIGABYTE MO27Q3 QD-OLED 2K",
+      "precio_antes": 2537.0,
+      "precio": 2502.0,
+      "stock": "> 10"
+    },
+    {
+      "codigo": "041879",
+      "categoria": "Laptop",
+      "nombre": "Laptop GIGABYTE AERO X16",
+      "precio_antes": 7503.5,
+      "precio": 7433.5,
+      "stock": "4"
+    },
+    {
+      "codigo": "042481",
+      "categoria": "Auricular",
+      "nombre": "Auricular JBL Tune 780NC Bluetooth Black",
+      "precio_antes": 261.5,
+      "precio": 240.5,
+      "stock": "1"
+    },
+    {
+      "codigo": "042482",
+      "categoria": "Auricular",
+      "nombre": "Auricular JBL Tune 780NC Bluetooth White",
+      "precio_antes": 261.5,
+      "precio": 240.5,
+      "stock": "1"
+    },
+    {
+      "codigo": "039795",
+      "categoria": "Case",
+      "nombre": "Case Mid Tower Antryx FX-800 ARGB 4FAN Black",
+      "precio_antes": 286.0,
+      "precio": 275.5,
+      "stock": "2"
+    },
+    {
+      "codigo": "038236",
+      "categoria": "Case",
+      "nombre": "Case Mid Tower Corsair 3000D RGB Airflow White",
+      "precio_antes": 338.5,
+      "precio": 230.0,
+      "stock": "7"
+    },
+    {
+      "codigo": "039646",
+      "categoria": "Cooler",
+      "nombre": "Cooler CPU Liquid 240 MSI MAG Coreliquid I240 White",
+      "precio_antes": 471.0,
+      "precio": 376.5,
+      "stock": "> 10"
+    },
+    {
+      "codigo": "037487",
+      "categoria": "Cooler",
+      "nombre": "Cooler CPU Liquid 240 XPG Levante X 240 ARGB Black",
+      "precio_antes": 477.0,
+      "precio": 338.5,
+      "stock": "1"
+    },
+    {
+      "codigo": "044125",
+      "categoria": "Memoria",
+      "nombre": "Memoria RAM Kingston DDR4 16GB 3200MHz",
+      "precio_antes": 189.0,
+      "precio": 159.0,
+      "stock": "9"
+    },
+    {
+      "codigo": "038816",
+      "categoria": "Ssd",
+      "nombre": "SSD NVMe WD Green SN350 1TB",
+      "precio_antes": 265.0,
+      "precio": 229.0,
+      "stock": "> 10"
+    },
+    {
+      "codigo": "042020",
+      "categoria": "Laptop",
+      "nombre": "Laptop Lenovo IdeaPad 3 Ryzen 5",
+      "precio_antes": 2299.0,
+      "precio": 2149.0,
+      "stock": "3"
+    },
+    {
+      "codigo": "041770",
+      "categoria": "Gpu",
+      "nombre": "Tarjeta de Video RTX 4060 8GB",
+      "precio_antes": 1599.0,
+      "precio": 1499.0,
+      "stock": "5"
+    },
+    {
+      "codigo": "029000",
+      "categoria": "Mouse",
+      "nombre": "Mouse Logitech G203 Lightsync",
+      "precio_antes": 129.0,
+      "precio": 95.0,
+      "stock": "> 10"
+    },
+    {
+      "codigo": "032110",
+      "categoria": "Teclado",
+      "nombre": "Teclado Mecánico Redragon Kumara",
+      "precio_antes": 199.0,
+      "precio": 169.0,
+      "stock": "6"
+    },
+    {
+      "codigo": "031444",
+      "categoria": "Placa",
+      "nombre": "Placa Madre ASUS Prime B550M-A",
+      "precio_antes": 499.0,
+      "precio": 459.0,
+      "stock": "4"
+    },
+    {
+      "codigo": "040555",
+      "categoria": "Procesador",
+      "nombre": "Procesador AMD Ryzen 5 5600G",
+      "precio_antes": 699.0,
+      "precio": 619.0,
+      "stock": "8"
+    }
+  ]
+}
