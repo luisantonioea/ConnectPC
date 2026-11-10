@@ -1,0 +1,104 @@
+
+{
+  "version": "1.0",
+  "fecha_revision": "2026-11-09",
+  "descripcion": "Base de conocimientos de requisitos de videojuegos para ConnectPC.",
+  "juegos": [
+    {
+      "id": "valorant",
+      "nombre": "VALORANT",
+      "alias": [
+        "valorant"
+      ],
+      "desarrollador": "Riot Games",
+      "sistema_operativo": {
+        "compatibles": [
+          "Windows 10 de 64 bits, compilacion 19041 o superior",
+          "Windows 11 de 64 bits"
+        ],
+        "windows_11_requiere": [
+          "TPM 2.0",
+          "Arranque seguro UEFI"
+        ]
+      },
+      "requisitos_minimos": {
+        "perfil_referencia": "30 FPS",
+        "ram_gb": 4,
+        "cpu_referencia": [
+          "Intel Core i3-540",
+          "AMD Athlon 200GE"
+        ],
+        "gpu_referencia": [
+          "Intel HD Graphics 4000",
+          "AMD Radeon R5 220"
+        ],
+        "vram_gb_si_gpu_dedicada": 1,
+        "directx": 11
+      },
+      "requisitos_recomendados": {
+        "perfil_referencia": "60 FPS",
+        "ram_gb": 4,
+        "cpu_referencia": [
+          "Intel Core i3-4150",
+          "AMD Ryzen 3 1200"
+        ],
+        "gpu_referencia": [
+          "NVIDIA GeForce GT 730",
+          "AMD Radeon R7 240"
+        ]
+      },
+      "requisitos_alto_rendimiento": {
+        "perfil_referencia": "144 FPS",
+        "ram_gb": 4,
+        "cpu_referencia": [
+          "Intel Core i5-9400F",
+          "AMD Ryzen 5 2600X"
+        ],
+        "gpu_referencia": [
+          "NVIDIA GeForce GTX 1050 Ti",
+          "AMD Radeon R7 370",
+          "Intel Arc A310"
+        ]
+      },
+      "requisitos_adicionales": [
+        "El procesador debe admitir SSE 4.2 o AVX",
+        "Los perfiles FPS son referencias oficiales, no garantias",
+        "Se requiere compatibilidad con DirectX 11"
+      ],
+      "fuente": "https://playvalorant.com/es-es/specs/"
+    },
+    {
+      "id": "counter-strike-2",
+      "nombre": "Counter-Strike 2",
+      "alias": [
+        "cs2",
+        "counter strike 2",
+        "counter-strike 2"
+      ],
+      "desarrollador": "Valve",
+      "sistema_operativo": {
+        "minimo_publicado": "Windows 10"
+      },
+      "requisitos_minimos": {
+        "ram_gb": 8,
+        "cpu_referencia": [
+          "Intel Core i5-750 o superior"
+        ],
+        "cpu_hilos_hardware_minimos": 4,
+        "gpu": {
+          "vram_gb_minima": 1,
+          "directx": 11,
+          "shader_model": "5.0"
+        },
+        "almacenamiento_gb": 85
+      },
+      "requisitos_adicionales": [
+        "La tarjeta grafica debe ser compatible con DirectX 11",
+        "Debe admitir Shader Model 5.0",
+        "Los requisitos minimos no garantizan FPS determinados",
+        "El rendimiento depende de la configuracion y del equipo"
+      ],
+      "fuente": "https://store.steampowered.com/app/730/CounterStrike_2/"
+    }
+  ]
+}
