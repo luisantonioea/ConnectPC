@@ -198,57 +198,67 @@ function resumenEquipo(equipo) {
 // DETECCION AUTOMATICA CON PERMISO
 // =======================================
 
+
 async function detectarConPermiso() {
+
     const autorizado = window.confirm(
         "ConnectPC necesita analizar los componentes " +
         "de esta computadora.\n\n" +
-        "Se consultarán CPU, GPU, RAM y Windows.\n\n" +
+        "Se consultarán:\n" +
+        "• Procesador\n" +
+        "• Memoria RAM\n" +
+        "• Tarjetas gráficas\n" +
+        "• Sistema operativo\n\n" +
         "¿Autorizas el análisis?"
     );
 
     if (!autorizado) {
         addMessage(
-            "No se realizó el análisis. " +
-            "Puedes continuar preguntando sin compartir tu hardware.",
+            "No autorizaste el análisis. " +
+            "Puedes seguir utilizando ConnectPC normalmente.",
             "bot"
         );
         return false;
     }
 
-    const esLocal = [
-        "localhost",
-        "127.0.0.1"
-    ].includes(window.location.hostname);
+    const esLocal = (
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost"
+    );
 
-    if (!esLocal) {
-        addMessage(
-            "La detección automática solo está disponible " +
-            "cuando ConnectPC se ejecuta en tu propia PC.\n\n" +
-            "En la versión web, utiliza '📂 Cargar informe' " +
-            "para compartir un reporte generado localmente.",
-            "bot"
-        );
-        return false;
-    }
+    // Flask local o detector instalado en Windows
+    const url = esLocal
+        ? "/api/detectar-pc"
+        : "http://127.0.0.1:8765/analizar";
 
     const estado = addMessage(
-        "🔍 Analizando los componentes de tu PC...",
+        "🔍 ConnectPC está analizando tu computadora...",
         "bot"
     );
 
     try {
-        const respuesta = await fetch("/api/detectar-pc", {
-            method: "POST",
-            headers: {
-                "X-ConnectPC-Consent": "si"
+
+        const opciones = esLocal
+            ? {
+                method: "POST",
+                headers: {
+                    "X-ConnectPC-Consent": "si"
+                }
             }
-        });
+            : {
+                method: "POST",
+                mode: "cors",
+                targetAddressSpace: "loopback"
+            };
+
+        const respuesta = await fetch(url, opciones);
 
         const datos = await respuesta.json();
 
         if (!respuesta.ok || !datos.equipo) {
             throw new Error(
-                datos.error || "No se pudo detectar el hardware."
+                datos.error ||
+                "No fue posible obtener los componentes."
             );
         }
 
@@ -257,19 +267,29 @@ async function detectarConPermiso() {
         estado.textContent =
             "✅ Análisis completado.\n\n" +
             resumenEquipo(equipoActual) +
-            "\n\nAhora analizaré tu consulta.";
+            "\n\nAhora analizaré tu pregunta " +
+            "utilizando estos componentes.";
 
         return true;
 
     } catch (error) {
-        estado.textContent =
-            "No pude analizar automáticamente tu PC.\n\n" +
-            error.message +
-            "\n\nTambién puedes utilizar '📂 Cargar informe'.";
+
+        estado.textContent = (
+            "⚠️ No pude conectar con el detector.\n\n" +
+            (esLocal
+                ? "Comprueba que Flask esté ejecutándose."
+                : "Abre ConnectPC Detector en esta PC y " +
+                  "autoriza el acceso a la red local si " +
+                  "tu navegador lo solicita.") +
+            "\n\nTambién puedes usar '📂 Cargar informe'."
+        );
+
+        console.error("ConnectPC detector:", error);
 
         return false;
     }
 }
+
 
 // =======================================
 // CONSULTAR GEMINI
