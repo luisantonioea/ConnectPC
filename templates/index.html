@@ -140,7 +140,7 @@
     </div>
 
     <section class="ai-feature" id="analizador"><div class="site-width ai-feature-inner">
-      <div class="feature-text"><span class="feature-kicker">NUEVA HERRAMIENTA &middot; CONNECTPC IA</span><h2>&iquest;MI PC PUEDE CORRER<br><span>ESTE JUEGO?</span></h2><p>Conoce la informaci&oacute;n de tu hardware y consulta requisitos de videojuegos. Un an&aacute;lisis exacto necesita el detector de Windows instalado y autorizado; la versi&oacute;n web ofrece datos limitados.</p><div class="feature-actions"><button type="button" class="feature-button" data-action="analyze">&#128187; ANALIZAR MI PC &rarr;</button><button type="button" class="feature-secondary" data-action="open-chat">&#128172; HABLAR CON LA IA</button><button type="button" class="feature-secondary" data-action="upload">&#8679; CARGAR INFORME</button></div><p class="feature-note">No se ejecuta software en la PC sin autorizaci&oacute;n. Compatible con detector Windows cuando est&aacute; iniciado.</p></div>
+      <div class="feature-text"><span class="feature-kicker">NUEVA HERRAMIENTA &middot; CONNECTPC IA</span><h2>&iquest;MI PC PUEDE CORRER<br><span>ESTE JUEGO?</span></h2><p>Conoce la informaci&oacute;n de tu hardware y consulta requisitos de videojuegos. Para un an&aacute;lisis exacto copias un comando de PowerShell desde esta p&aacute;gina y lo ejecutas t&uacute; mismo, sin instalar nada.</p><div class="feature-actions"><button type="button" class="feature-button" data-action="analyze">&#128187; ANALIZAR MI PC &rarr;</button><button type="button" class="feature-secondary" data-action="open-chat">&#128172; HABLAR CON LA IA</button><button type="button" class="feature-secondary" data-action="upload">&#8679; CARGAR INFORME</button></div><p class="feature-note">La web nunca accede a tu PC: el comando lo ejecutas t&uacute; y solo lee CPU, GPU, RAM y versi&oacute;n de Windows.</p></div>
       <div class="dashboard"><div class="dashboard-top"><div><span class="dashboard-eyebrow">CONNECTPC SYSTEM SCAN</span><h3>Mi equipo <span class="dash-live-dot"></span></h3></div><span id="hw-badge" class="hw-badge">SIN ANALIZAR</span></div><div class="dashboard-grid"><div class="dash-tile"><span class="tile-icon">&#9635;</span><small>PROCESADOR</small><strong id="hw-cpu">Sin identificar</strong></div><div class="dash-tile"><span class="tile-icon">&#9670;</span><small>GR&Aacute;FICOS</small><strong id="hw-gpu">Sin identificar</strong></div><div class="dash-tile"><span class="tile-icon">&#8801;</span><small>MEMORIA RAM</small><strong id="hw-ram">Sin identificar</strong></div><div class="dash-tile"><span class="tile-icon">&#9711;</span><small>SISTEMA</small><strong id="hw-os">Sin identificar</strong></div></div><p class="hardware-hint" id="hardware-hint">Pulsa &laquo;Analizar mi PC&raquo; para comenzar.</p><div class="game-check"><div class="game-head"><span class="game-controller">&#127918;</span><div><strong>&iquest;Corre en mi PC?</strong><small>Consulta los requisitos con Gemini y Steam</small></div></div><form id="game-form" class="game-form"><label class="sr-only" for="game-input">Nombre del videojuego</label><input id="game-input" placeholder="Dota 2, GTA V, Cyberpunk..." maxlength="90" required><button type="submit">COMPROBAR &rarr;</button></form><div class="game-result" id="game-result" aria-live="polite">Escribe un juego para consultar la informaci&oacute;n disponible.</div></div></div>
     </div></section>
 
@@ -161,6 +161,29 @@
   </section>
   <button type="button" class="chat-fab" id="chat-fab" aria-label="Abrir ConnectPC IA" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v10a2.5 2.5 0 0 1-2.5 2.5H9L4 22z"/><path d="M8 9h8M8 13h5"/></svg><span class="fab-ping"></span></button>
   <input type="file" id="report-file" accept=".json,application/json" hidden aria-label="Seleccionar informe de hardware JSON">
+  <dialog class="detect-dialog" id="detect-dialog" aria-labelledby="detect-title">
+    <div class="detect-body">
+      <h3 id="detect-title">Analizar mi PC</h3>
+      <p class="detect-intro">El navegador no puede leer tu procesador, gr&aacute;fica ni RAM exactos. Con PowerShell (ya viene en Windows) lo haces en 3 pasos:</p>
+      <ol class="detect-steps">
+        <li>Pulsa <strong>Copiar comando</strong>.</li>
+        <li>Abre PowerShell (tecla Windows, escribe <em>PowerShell</em>, Enter), pega con clic derecho y pulsa Enter. El resultado se copia solo.</li>
+        <li>Pega el resultado aqu&iacute; abajo y pulsa <strong>Usar informe</strong>.</li>
+      </ol>
+      <pre class="detect-cmd" id="detect-cmd" tabindex="0">$p=Get-CimInstance Win32_Processor|Select-Object -First 1;$r=Get-CimInstance Win32_ComputerSystem;$g=@(Get-CimInstance Win32_VideoController|Where-Object{$_.Name}|ForEach-Object{$_.Name});$s=Get-CimInstance Win32_OperatingSystem;$j=[pscustomobject]@{formato='connectpc-hardware-v1';procesador=$p.Name.Trim();ram_gb=[math]::Round($r.TotalPhysicalMemory/1GB,1);graficas=$g;sistema_operativo=$s.Caption.Trim()}|ConvertTo-Json -Compress;Set-Clipboard $j;$j</pre>
+      <button type="button" class="detect-btn light" id="detect-copy">Copiar comando</button>
+      <label class="sr-only" for="detect-paste">Resultado del comando</label>
+      <textarea id="detect-paste" class="detect-paste" rows="3" maxlength="4000" placeholder="Pega aqu&iacute; el resultado de PowerShell..."></textarea>
+      <p class="detect-msg" id="detect-msg" role="status" aria-live="polite"></p>
+      <div class="detect-actions">
+        <button type="button" class="detect-btn" id="detect-use">Usar informe</button>
+        <button type="button" class="detect-btn light" id="detect-basic">Revisi&oacute;n b&aacute;sica del navegador</button>
+        <button type="button" class="detect-btn light" id="detect-exe">Ya tengo el detector instalado</button>
+        <button type="button" class="detect-btn ghost" id="detect-close">Cerrar</button>
+      </div>
+      <p class="detect-privacy">El comando solo lee CPU, GPU, RAM y Windows, y los copia a tu portapapeles. No env&iacute;a nada ni lee archivos. Los datos solo salen de tu navegador cuando haces una consulta a la IA.</p>
+    </div>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>
