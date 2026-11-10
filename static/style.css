@@ -239,6 +239,22 @@ img {max-width:100%}
 @keyframes typing-bounce {to {transform:translateY(-5px);opacity:.5}}
 .toast {position:fixed;z-index:90;left:50%;bottom:25px;transform:translateX(-50%);max-width:min(600px,calc(100% - 30px));padding:13px 19px;border-radius:10px;background:#174c38;color:#fff;box-shadow:0 13px 34px #10392752;font-size:12px;line-height:1.6;white-space:pre-line;text-align:center}
 .toast.warning {background:#694c23}.toast.error {background:#953b3b}
+.detect-dialog {border:0;border-radius:14px;padding:0;width:min(580px,calc(100% - 24px));max-height:calc(100vh - 24px);overflow:auto;color:#143e2a;box-shadow:0 24px 70px #052e2480}
+.detect-dialog::backdrop {background:#052e2499}
+.detect-body {padding:22px 24px 18px}
+.detect-body h3 {font-size:20px;margin-bottom:8px}
+.detect-intro {font-size:13px;line-height:1.6;color:#3f5f4c}
+.detect-steps {margin:10px 0 12px 20px;font-size:13px;line-height:1.7}
+.detect-cmd {background:#0f2a1f;color:#c8f47a;padding:10px 12px;border-radius:8px;font:11px/1.5 Consolas,monospace;white-space:pre-wrap;word-break:break-all;max-height:110px;overflow:auto;margin-bottom:8px}
+.detect-paste {width:100%;margin-top:10px;padding:9px 10px;border:1px solid #c9dccf;border-radius:8px;font:12px Consolas,monospace;resize:vertical}
+.detect-msg {min-height:18px;margin:6px 0;font-size:12px;font-weight:700;color:#067346}
+.detect-msg.error {color:#953b3b}
+.detect-actions {display:flex;flex-wrap:wrap;gap:8px}
+.detect-btn {border:0;border-radius:8px;padding:10px 14px;background:#067346;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.detect-btn.light {background:#e6f2e8;color:#315b45}
+.detect-btn.ghost {background:transparent;color:#7a8f82;margin-left:auto}
+.detect-btn:hover {filter:brightness(1.07)}
+.detect-privacy {margin-top:12px;font-size:11px;line-height:1.6;color:#7a8f82}
 /* Make the assistant visually consistent with the storefront. */
 .chat-head {background:#008a43}
 .chat-fab {background:#008d44;border-radius:50%;width:62px;height:62px;bottom:67px;right:23px}

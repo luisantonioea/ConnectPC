@@ -15,7 +15,7 @@
   const fileInput = $("report-file");
   const toast = $("toast");
   const ENDPOINT_LOCAL = "http://127.0.0.1:8765/analizar";
-  const state = { equipo: null, historial: [], enviando: false, analizando: false, abierto: false };
+  const state = { equipo: null, historial: [], enviando: false, abierto: false };
   let toastTimer = null;
   let linkDetector = "";
 
@@ -166,16 +166,73 @@
     };
   }
 
-  async function analizarPC() {
-    if (state.analizando) return;
-    state.analizando = true;
-    document.querySelectorAll('[data-action="analyze"]').forEach((b) => { b.disabled = true; });
-    notificar("Buscando el detector seguro de ConnectPC en esta computadora...", "ok", 0);
+  const dialogo = $("detect-dialog");
+
+  function mensajeDetector(texto, error = false) {
+    const campo = $("detect-msg");
+    campo.textContent = texto;
+    campo.className = "detect-msg" + (error ? " error" : "");
+  }
+
+  // "Analizar mi PC": abre el panel con el comando de PowerShell.
+  function analizarPC() {
+    mensajeDetector("");
+    if (!dialogo.open) dialogo.showModal();
+  }
+
+  // Aplica un informe ya validado y cierra el panel.
+  function aplicarEquipo(equipo, aviso, titulo) {
+    renderEquipo(equipo, aviso);
+    if (dialogo.open) dialogo.close();
+    notificar(titulo);
+    if (state.abierto) addMessage(titulo + "\n\n" + resumenEquipo(equipo) + "\n\nYa puedes preguntarme si tu PC corre un juego.", "bot");
+  }
+
+  async function copiarComando() {
+    const comando = $("detect-cmd");
+    try {
+      await navigator.clipboard.writeText(comando.textContent);
+      mensajeDetector("Comando copiado. P\u00e9galo en PowerShell.");
+    } catch (_err) {
+      const rango = document.createRange();
+      rango.selectNodeContents(comando);
+      const seleccion = window.getSelection();
+      seleccion.removeAllRanges();
+      seleccion.addRange(rango);
+      mensajeDetector("Ya est\u00e1 seleccionado: c\u00f3pialo con Ctrl+C.", true);
+    }
+  }
+
+  function usarInformePegado() {
+    const campo = $("detect-paste");
+    const texto = campo.value;
+    let equipo = null;
+    try {
+      // Tolera texto alrededor del JSON (por ejemplo, el prompt de PowerShell).
+      equipo = validarInforme(JSON.parse(texto.slice(texto.indexOf("{"), texto.lastIndexOf("}") + 1)));
+    } catch (_err) { /* informe inv\u00e1lido */ }
+    if (!equipo) {
+      mensajeDetector("No reconozco ese resultado. Pega exactamente lo que mostr\u00f3 PowerShell.", true);
+      return;
+    }
+    campo.value = "";
+    aplicarEquipo(equipo, "Informe generado con PowerShell en tu PC. La web no lo verific\u00f3 de forma independiente.", "Informe recibido.");
+  }
+
+  function usarBasico() {
+    aplicarEquipo(
+      informeNavegador(),
+      "Revisi\u00f3n b\u00e1sica: los datos son aproximados. Para modelos exactos pulsa Analizar mi PC y usa el comando de PowerShell.",
+      "Revisi\u00f3n b\u00e1sica completada."
+    );
+  }
+
+  // Opcional: solo para quien ya tiene ConnectPC Detector instalado y abierto.
+  async function usarDetectorInstalado() {
+    mensajeDetector("Buscando el detector en esta computadora...");
     const aborter = new AbortController();
     const timeout = setTimeout(() => aborter.abort(), 40000);
     try {
-      // Chrome/Edge moderno: declara explicitamente que apunta a loopback.
-      // El navegador decide si debe pedir permiso de acceso a red local.
       const respuesta = await fetch(ENDPOINT_LOCAL, {
         method: "POST",
         mode: "cors",
@@ -188,29 +245,16 @@
       try { datos = await respuesta.json(); } catch (_err) { /* sin cuerpo JSON */ }
       if (!respuesta.ok || !datos.equipo) throw new Error(datos.error || "Detector no disponible");
       const validado = validarInforme(datos.equipo);
-      if (!validado) throw new Error("El detector devolvi\u00f3 un informe inv\u00e1lido");
-      renderEquipo(validado);
-      notificar("Equipo detectado: CPU, gr\u00e1ficos, RAM y sistema operativo listos para la IA.");
-      if (state.abierto) addMessage("An\u00e1lisis completo autorizado.\n\n" + resumenEquipo(validado) + "\n\nYa puedes preguntarme si tu PC corre un juego.", "bot");
-      return validado;
+      if (!validado) throw new Error("Informe inv\u00e1lido");
+      aplicarEquipo(validado, "Datos obtenidos con permiso desde el detector de Windows. No se incluye informaci\u00f3n personal.", "An\u00e1lisis completo autorizado.");
     } catch (err) {
-      const basico = informeNavegador();
-      renderEquipo(basico, "Revisi\u00f3n b\u00e1sica: los datos son aproximados. Para detectar modelos exactos, instala e inicia ConnectPC Detector en Windows y permite el acceso local del navegador.");
-      notificar("Revisi\u00f3n b\u00e1sica completada. El detector completo no est\u00e1 conectado. Puedes seguir usando la IA.", "warning", 10500);
-      if (state.abierto) addMessage(
-        "No se pudo conectar con ConnectPC Detector. He realizado una **revisi\u00f3n b\u00e1sica** con la informaci\u00f3n que permite el navegador:\n\n" +
-        resumenEquipo(basico) +
-        "\n\n**Importante:** esto no identifica necesariamente el modelo exacto del procesador, de la GPU ni la RAM f\u00edsica. Para el an\u00e1lisis completo necesitas instalar y autorizar el detector Windows." +
-        (linkDetector ? "\n\nEnlace de descarga configurado en la web." : "\n\nEl ZIP del proyecto incluye los archivos para crear e instalar el detector."),
-        "bot",
-        linkDetector ? [{ titulo: "Descargar detector Windows", url: linkDetector }] : []
+      mensajeDetector(
+        "No se encontr\u00f3 el detector. Usa el comando de PowerShell." + (linkDetector ? " Descarga del detector: " + linkDetector : ""),
+        true
       );
       console.info("ConnectPC: detector no accesible", err && err.message);
-      return basico;
     } finally {
       clearTimeout(timeout);
-      state.analizando = false;
-      document.querySelectorAll('[data-action="analyze"]').forEach((b) => { b.disabled = false; });
     }
   }
 
@@ -320,6 +364,11 @@
   overlay.addEventListener("click", cerrarChat);
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && state.abierto) cerrarChat(); });
   fileInput.addEventListener("change", cargarInforme);
+  $("detect-copy").addEventListener("click", copiarComando);
+  $("detect-use").addEventListener("click", usarInformePegado);
+  $("detect-basic").addEventListener("click", usarBasico);
+  $("detect-exe").addEventListener("click", usarDetectorInstalado);
+  $("detect-close").addEventListener("click", () => dialogo.close());
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
