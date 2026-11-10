@@ -1,4 +1,4 @@
-flask
-google-genai
-python-dotenv
-gunicorn
+flask==3.1.3
+google-genai==3.0.0
+python-dotenv==1.2.4
+gunicorn==26.2.0; sys_platform != "win32"

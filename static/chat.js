@@ -6,6 +6,9 @@ const chatSend = document.getElementById("chat-send");
 const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
 
+// El saludo se define una sola vez, en index.html
+const saludoInicial = chatMessages.firstElementChild.textContent.trim();
+
 const historial = [];
 
 let equipoActual = null;
@@ -26,6 +29,78 @@ function addMessage(texto, tipo) {
 
     return div;
 }
+
+// Muestra texto plano en una burbuja del bot
+function mostrarTexto(burbuja, texto) {
+    burbuja.className = "message bot";
+    burbuja.textContent = texto;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Muestra la respuesta de Gemini con formato markdown.
+// DOMPurify limpia el HTML; si las librerías no cargaron
+// (sin internet), se muestra como texto plano.
+function mostrarRespuesta(burbuja, texto, fuentes = []) {
+    if (window.marked && window.DOMPurify) {
+        burbuja.className = "message bot md";
+        burbuja.innerHTML = DOMPurify.sanitize(
+            marked.parse(texto, { breaks: true })
+        );
+    } else {
+        mostrarTexto(burbuja, texto);
+    }
+
+    const validas = fuentes.filter(
+        f => /^https?:\/\//.test(f.url)
+    );
+
+    if (validas.length) {
+        const bloque = document.createElement("div");
+        bloque.className = "fuentes";
+        bloque.append("Fuentes consultadas:");
+
+        for (const f of validas) {
+            const enlace = document.createElement("a");
+            enlace.href = f.url;
+            enlace.textContent = f.titulo;
+            enlace.target = "_blank";
+            enlace.rel = "noopener noreferrer";
+            bloque.append(enlace);
+        }
+
+        burbuja.append(bloque);
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+if (window.DOMPurify) {
+    // Los enlaces de las respuestas se abren en otra pestaña
+    DOMPurify.addHook("afterSanitizeAttributes", (nodo) => {
+        if (nodo.tagName === "A") {
+            nodo.setAttribute("target", "_blank");
+            nodo.setAttribute("rel", "noopener noreferrer");
+        }
+    });
+}
+
+// Pantalla completa del chat (Esc para salir)
+const chatFull = document.getElementById("chat-full");
+
+function pantallaCompleta(activa) {
+    chatWindow.classList.toggle("fullscreen", activa);
+    chatFull.textContent = activa ? "🗗" : "⛶";
+    chatFull.title = activa ? "Salir de pantalla completa" : "Pantalla completa";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatFull.addEventListener("click", () => {
+    pantallaCompleta(!chatWindow.classList.contains("fullscreen"));
+});
+
+document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") pantallaCompleta(false);
+});
 
 function openChat() {
     chatWindow.classList.add("open");
@@ -95,6 +170,25 @@ const zonaEntrada = chatWindow.querySelector(".chat-input-area");
 
 chatWindow.insertBefore(herramientas, zonaEntrada);
 
+// Mostrar u ocultar la barra de botones (se recuerda en el navegador)
+function mostrarHerramientas(visible) {
+    herramientas.style.display = visible ? "flex" : "none";
+
+    try {
+        localStorage.setItem("connectpc-herramientas", visible ? "1" : "0");
+    } catch (e) { /* sin almacenamiento: se ignora */ }
+}
+
+document.getElementById("chat-tools").addEventListener("click", () => {
+    mostrarHerramientas(herramientas.style.display === "none");
+});
+
+try {
+    if (localStorage.getItem("connectpc-herramientas") === "0") {
+        mostrarHerramientas(false);
+    }
+} catch (e) { /* sin almacenamiento: barra visible */ }
+
 // =======================================
 // CONTROL DEL CHAT
 // =======================================
@@ -108,48 +202,6 @@ function bloquearChat(estado) {
     botonNuevo.disabled = estado;
 
     botonQuitar.disabled = estado || equipoActual === null;
-}
-
-function normalizar(texto) {
-    return texto
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-}
-
-// =======================================
-// DETECTAR PREGUNTAS SOBRE RENDIMIENTO
-// =======================================
-
-function necesitaAnalizarPC(mensaje) {
-    const texto = normalizar(mensaje);
-
-    const mencionaSuEquipo =
-        /\b(mi|mis|esta|este)\s+(pc|laptop|computadora|notebook|equipo|maquina)\b/
-        .test(texto);
-
-    const preguntaRendimiento =
-        /\b(corre|correr|correra|corra|soporta|soporte|soportara|aguanta|aguantara|jugar|juega|ejecutar|ejecuta|fps|rendimiento|funciona|funcionara)\b/
-        .test(texto);
-
-    const preguntaDirecta =
-        /\b(puedo|podre|podria)\s+(correr|jugar|ejecutar)\b/
-        .test(texto);
-
-    const preguntaJuegos =
-        /\b(que|cuales)\s+juegos\s+(puedo|me)\b/
-        .test(texto);
-
-    const meCorre =
-        /\bme\s+(corre|correra|funciona|funcionara|aguanta)\b/
-        .test(texto);
-
-    return (
-        (mencionaSuEquipo && preguntaRendimiento) ||
-        preguntaDirecta ||
-        preguntaJuegos ||
-        meCorre
-    );
 }
 
 // =======================================
@@ -196,8 +248,8 @@ function resumenEquipo(equipo) {
 
 // =======================================
 // DETECCION AUTOMATICA CON PERMISO
+// Devuelve "ok", "rechazado" o "error".
 // =======================================
-
 
 async function detectarConPermiso() {
 
@@ -209,16 +261,19 @@ async function detectarConPermiso() {
         "• Memoria RAM\n" +
         "• Tarjetas gráficas\n" +
         "• Sistema operativo\n\n" +
+        "Estos datos se enviarán a Gemini (Google) junto con " +
+        "tus preguntas hasta que pulses «Quitar datos». " +
+        "No se guardan en disco.\n\n" +
         "¿Autorizas el análisis?"
     );
 
     if (!autorizado) {
         addMessage(
             "No autorizaste el análisis. " +
-            "Puedes seguir utilizando ConnectPC normalmente.",
+            "Responderé con información general, sin usar tu equipo.",
             "bot"
         );
-        return false;
+        return "rechazado";
     }
 
     const esLocal = (
@@ -226,10 +281,16 @@ async function detectarConPermiso() {
         window.location.hostname === "localhost"
     );
 
-    // Flask local o detector instalado en Windows
-    const url = esLocal
-        ? "/api/detectar-pc"
-        : "http://127.0.0.1:8765/analizar";
+    if (!esLocal) {
+        addMessage(
+            "⚠️ La detección automática solo funciona ejecutando " +
+            "ConnectPC en tu propia PC con Windows.\n\n" +
+            "Puedes usar '📂 Cargar informe' con el archivo " +
+            "reporte_pc.json.",
+            "bot"
+        );
+        return "error";
+    }
 
     const estado = addMessage(
         "🔍 ConnectPC está analizando tu computadora...",
@@ -237,21 +298,10 @@ async function detectarConPermiso() {
     );
 
     try {
-
-        const opciones = esLocal
-            ? {
-                method: "POST",
-                headers: {
-                    "X-ConnectPC-Consent": "si"
-                }
-            }
-            : {
-                method: "POST",
-                mode: "cors",
-                targetAddressSpace: "loopback"
-            };
-
-        const respuesta = await fetch(url, opciones);
+        const respuesta = await fetch("/api/detectar-pc", {
+            method: "POST",
+            headers: { "X-ConnectPC-Consent": "si" }
+        });
 
         const datos = await respuesta.json();
 
@@ -270,32 +320,29 @@ async function detectarConPermiso() {
             "\n\nAhora analizaré tu pregunta " +
             "utilizando estos componentes.";
 
-        return true;
+        return "ok";
 
     } catch (error) {
 
         estado.textContent = (
-            "⚠️ No pude conectar con el detector.\n\n" +
-            (esLocal
-                ? "Comprueba que Flask esté ejecutándose."
-                : "Abre ConnectPC Detector en esta PC y " +
-                  "autoriza el acceso a la red local si " +
-                  "tu navegador lo solicita.") +
-            "\n\nTambién puedes usar '📂 Cargar informe'."
+            "⚠️ No pude analizar tu PC: " + error.message +
+            "\n\nComprueba que Flask esté ejecutándose en Windows " +
+            "o usa '📂 Cargar informe'."
         );
 
         console.error("ConnectPC detector:", error);
 
-        return false;
+        return "error";
     }
 }
-
 
 // =======================================
 // CONSULTAR GEMINI
 // =======================================
 
-async function consultarGemini(mensaje, burbujaExistente = null) {
+async function consultarGemini(
+    mensaje, burbujaExistente = null, omitirAnalisis = false
+) {
     const visual = burbujaExistente || addMessage(
         "🤖 ConnectPC está analizando tu pregunta...",
         "bot"
@@ -310,7 +357,8 @@ async function consultarGemini(mensaje, burbujaExistente = null) {
             body: JSON.stringify({
                 mensaje: mensaje,
                 historial: historial.slice(-16),
-                equipo: equipoActual
+                equipo: equipoActual,
+                omitir_analisis: omitirAnalisis
             })
         });
 
@@ -322,21 +370,34 @@ async function consultarGemini(mensaje, burbujaExistente = null) {
             );
         }
 
-        // Si Python pide analizar la PC, solicitar
-        // permiso y continuar la misma pregunta.
+        // El servidor pide analizar la PC: se solicita permiso
+        // y se continúa con la misma pregunta.
         if (datos.requiere_analisis && !equipoActual) {
-            visual.textContent = datos.respuesta;
+            mostrarTexto(visual, datos.respuesta);
             preguntaPendiente = mensaje;
 
-            const detectado = await detectarConPermiso();
+            const resultado = await detectarConPermiso();
 
-            if (detectado) {
+            if (resultado === "ok") {
                 preguntaPendiente = null;
 
-                visual.textContent =
-                    "Comparando los componentes con tu consulta...";
+                mostrarTexto(
+                    visual,
+                    "Comparando los componentes con tu consulta..."
+                );
 
                 await consultarGemini(mensaje, visual);
+
+            } else if (resultado === "rechazado") {
+                // Sin permiso se responde igual, sin datos del equipo
+                preguntaPendiente = null;
+
+                mostrarTexto(
+                    visual,
+                    "🤖 ConnectPC está analizando tu pregunta..."
+                );
+
+                await consultarGemini(mensaje, visual, true);
             }
 
             return;
@@ -346,7 +407,7 @@ async function consultarGemini(mensaje, burbujaExistente = null) {
             throw new Error("Gemini devolvió una respuesta vacía.");
         }
 
-        visual.textContent = datos.respuesta;
+        mostrarRespuesta(visual, datos.respuesta, datos.fuentes || []);
 
         // Guardar conversación con contexto
         historial.push(
@@ -354,11 +415,11 @@ async function consultarGemini(mensaje, burbujaExistente = null) {
             { role: "model", text: datos.respuesta }
         );
 
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
     } catch (error) {
-        visual.textContent =
-            "Ocurrió un problema: " + error.message;
+        mostrarTexto(
+            visual,
+            "Ocurrió un problema: " + error.message
+        );
     }
 }
 
@@ -376,16 +437,6 @@ async function procesarPregunta(mensaje, mostrar = true) {
     }
 
     try {
-        if (!equipoActual && necesitaAnalizarPC(mensaje)) {
-            preguntaPendiente = mensaje;
-
-            const detectado = await detectarConPermiso();
-
-            if (!detectado) return;
-
-            preguntaPendiente = null;
-        }
-
         await consultarGemini(mensaje);
 
     } finally {
@@ -464,9 +515,9 @@ botonAnalizar.addEventListener("click", async () => {
     bloquearChat(true);
 
     try {
-        const detectado = await detectarConPermiso();
+        const resultado = await detectarConPermiso();
 
-        if (detectado && preguntaPendiente) {
+        if (resultado === "ok" && preguntaPendiente) {
             const pregunta = preguntaPendiente;
             preguntaPendiente = null;
 
@@ -511,14 +562,7 @@ botonNuevo.addEventListener("click", () => {
 
     chatMessages.replaceChildren();
 
-    addMessage(
-        "¡Hola! 👋 Soy ConnectPC.\n\n" +
-        "Puedo ayudarte con hardware, software, " +
-        "videojuegos y diagnósticos de computadoras.\n\n" +
-        "Si necesitas comprobar un juego, " +
-        "te pediré autorización para analizar tu PC.",
-        "bot"
-    );
+    addMessage(saludoInicial, "bot");
 
     chatInput.value = "";
     bloquearChat(false);
@@ -532,21 +576,19 @@ botonNuevo.addEventListener("click", () => {
 chatToggle.addEventListener("click", openChat);
 chatClose.addEventListener("click", closeChat);
 
-chatSend.addEventListener("click", () => {
+function enviarDesdeCaja() {
     const mensaje = chatInput.value.trim();
     chatInput.value = "";
 
     procesarPregunta(mensaje);
-});
+}
+
+chatSend.addEventListener("click", enviarDesdeCaja);
 
 chatInput.addEventListener("keydown", (evento) => {
     if (evento.key === "Enter" && !evento.isComposing) {
         evento.preventDefault();
-
-        const mensaje = chatInput.value.trim();
-        chatInput.value = "";
-
-        procesarPregunta(mensaje);
+        enviarDesdeCaja();
     }
 });
 
